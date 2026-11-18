@@ -1,0 +1,67 @@
+services:
+  cleanwash-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cleanwash-app
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/public
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      cleanwash-db:
+        condition: service_healthy
+    networks:
+      - cleanwash-network
+
+  cleanwash-vite:
+    image: node:20-alpine
+    container_name: cleanwash-vite
+    restart: unless-stopped
+    working_dir: /app
+    ports:
+      - "5175:5173"
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    volumes:
+      - .:/app
+    command: sh -c "npm install && npm run dev"
+    networks:
+      - cleanwash-network
+
+  cleanwash-db:
+    image: mysql:8.0
+    container_name: cleanwash-db
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: cleanwash
+      MYSQL_USER: cleanwash
+      MYSQL_PASSWORD: cleanwash_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - cleanwash_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u cleanwash -pcleanwash_password || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 10s
+    networks:
+      - cleanwash-network
+
+volumes:
+  cleanwash_db_data:
+    name: cleanwash_db_data
+
+networks:
+  cleanwash-network:
+    name: cleanwash-network
