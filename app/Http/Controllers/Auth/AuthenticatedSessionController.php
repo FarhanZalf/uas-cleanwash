@@ -7,7 +7,6 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -16,10 +15,13 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): Response
+    public function create(): Response|RedirectResponse
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
+
         return Inertia::render('Auth/Login', [
-            'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
         ]);
     }
@@ -33,7 +35,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        return match ($user->peran) {
+            'Kasir' => redirect()->intended(route('kasir.dashboard', absolute: false)),
+            'Produksi' => redirect()->intended(route('produksi.dashboard', absolute: false)),
+            'Antar' => redirect()->intended(route('antar.dashboard', absolute: false)),
+            default => redirect()->intended(route('dashboard', absolute: false)),
+        };
     }
 
     /**
@@ -47,6 +56,6 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

@@ -1,22 +1,33 @@
 <?php
 
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
+// Redirect halaman depan ke halaman login internal
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
+    return redirect()->route('login');
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Dispatcher Dashboard: arahkan otomatis sesuai peran petugas
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('dashboard');
+
+// Modul Role Kasir & Admin
+Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'kasir'])->name('dashboard');
+});
+
+// Modul Role Produksi
+Route::middleware(['auth', 'role:Produksi'])->prefix('produksi')->name('produksi.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'produksi'])->name('dashboard');
+});
+
+// Modul Role Antar (Kurir)
+Route::middleware(['auth', 'role:Antar'])->prefix('antar')->name('antar.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'antar'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
