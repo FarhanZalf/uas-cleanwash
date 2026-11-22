@@ -130,7 +130,7 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
                                                         {kloter.petugas?.nama_petugas}
                                                     </div>
                                                     <span className="text-[11px] text-slate-500">
-                                                        {kloter.petugas?.no_telepon || '-'}
+                                                        {kloter.petugas?.email || '-'}
                                                     </span>
                                                 </td>
                                                 <td className="px-5 py-3.5 font-medium text-slate-700">

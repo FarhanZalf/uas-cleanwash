@@ -46,7 +46,7 @@ export default function PengantaranShow({ pengantaran }) {
                     <div className="rounded-xl border border-teal-100 bg-white p-4">
                         <div className="text-xs font-semibold text-slate-500">Kurir Penanggung Jawab</div>
                         <div className="mt-1 font-bold text-slate-900 text-base">{kurir?.nama_petugas}</div>
-                        <div className="text-xs text-slate-500 mt-0.5">📞 {kurir?.no_telepon || '-'}</div>
+                        <div className="text-xs text-slate-500 mt-0.5">✉️ {kurir?.email || '-'}</div>
                     </div>
 
                     <div className="rounded-xl border border-teal-100 bg-white p-4">

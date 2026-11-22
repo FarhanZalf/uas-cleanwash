@@ -21,7 +21,7 @@ class PengantaranController extends Controller
         $search = trim((string) $request->input('search', ''));
 
         $pengantaran = Pengantaran::query()
-            ->with(['petugas:id,kode_petugas,nama_petugas,no_telepon'])
+            ->with(['petugas:id,kode_petugas,nama_petugas,email'])
             ->withCount(['detailPengantaran as total_paket'])
             ->withCount(['detailPengantaran as total_diterima' => fn ($q) => $q->where('status_antar', 'Diterima')])
             ->withCount(['detailPengantaran as total_gagal' => fn ($q) => $q->where('status_antar', 'Gagal')])
@@ -38,7 +38,7 @@ class PengantaranController extends Controller
 
         $kurirList = Petugas::where('peran', 'Antar')
             ->orderBy('nama_petugas')
-            ->get(['id', 'kode_petugas', 'nama_petugas', 'no_telepon']);
+            ->get(['id', 'kode_petugas', 'nama_petugas', 'email']);
 
         // Transaksi yang siap dijadwalkan (selesai dicuci, masih aktif, dan belum berada di kloter yang sedang berjalan)
         $transaksiSiapAntar = TransaksiLaundry::query()
@@ -92,7 +92,7 @@ class PengantaranController extends Controller
     public function show(Pengantaran $pengantaran): Response
     {
         $pengantaran->load([
-            'petugas:id,kode_petugas,nama_petugas,no_telepon',
+            'petugas:id,kode_petugas,nama_petugas,email',
             'detailPengantaran.transaksiLaundry.pelanggan',
             'detailPengantaran.transaksiLaundry.detailPakaian.jenisLayanan',
         ]);
