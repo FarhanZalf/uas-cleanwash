@@ -1,8 +1,10 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Kasir\PengantaranController;
 use App\Http\Controllers\Kasir\TransaksiController;
 use App\Http\Controllers\Produksi\ProduksiController;
+use App\Http\Controllers\Antar\AntarController;
 use App\Http\Controllers\Master\JenisLayananController;
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\PetugasController;
@@ -50,6 +52,9 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::resource('petugas', PetugasController::class)
         ->parameters(['petugas' => 'petugas'])
         ->except(['create', 'show', 'edit']);
+
+    // Penjadwalan Kloter Pengantaran Kurir
+    Route::resource('pengantaran', PengantaranController::class)->only(['index', 'store', 'show']);
 });
 
 // Modul Role Produksi
@@ -61,7 +66,8 @@ Route::middleware(['auth', 'role:Produksi'])->prefix('produksi')->name('produksi
 
 // Modul Role Antar (Kurir)
 Route::middleware(['auth', 'role:Antar'])->prefix('antar')->name('antar.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'antar'])->name('dashboard');
+    Route::get('/dashboard', [AntarController::class, 'index'])->name('dashboard');
+    Route::post('/detail-pengantaran/{detailPengantaran}/update-status', [AntarController::class, 'updateStatus'])->name('update-status');
 });
 
 Route::middleware('auth')->group(function () {
