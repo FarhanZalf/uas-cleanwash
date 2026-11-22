@@ -64,6 +64,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                             Pengantaran
                                         </NavLink>
                                         <NavLink
+                                            href={route('kasir.laporan.index')}
+                                            active={route().current('kasir.laporan.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Laporan
+                                        </NavLink>
+                                        <NavLink
                                             href={route('kasir.pelanggan.index')}
                                             active={route().current('kasir.pelanggan.*')}
                                             className="px-3 py-2 text-xs font-bold rounded-lg transition"
@@ -116,11 +123,27 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
-                        {/* Right Profile & Badge */}
+                        {/* Right Profile & Badge & Role Switcher */}
                         <div className="hidden sm:ms-6 sm:flex sm:items-center space-x-3">
-                            <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full border ${roleBadgeColor}`}>
-                                {user?.peran}
-                            </span>
+                            {/* Role Switcher Demo */}
+                            <div className="flex items-center gap-1 bg-slate-50 border border-teal-200/60 rounded-lg p-1 text-[11px]">
+                                <span className="text-slate-400 font-semibold px-1">Peran:</span>
+                                {['Kasir', 'Produksi', 'Antar'].map((r) => (
+                                    <Link
+                                        key={r}
+                                        href={route('switch-role', r)}
+                                        method="post"
+                                        as="button"
+                                        className={`px-2 py-0.5 rounded font-bold transition cursor-pointer ${
+                                            user?.peran === r
+                                                ? 'bg-[#0D9488] text-white shadow-xs'
+                                                : 'text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
+                                        }`}
+                                    >
+                                        {r}
+                                    </Link>
+                                ))}
+                            </div>
 
                             <div className="relative">
                                 <Dropdown>
@@ -215,6 +238,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     Pengantaran Kurir
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
+                                    href={route('kasir.laporan.index')}
+                                    active={route().current('kasir.laporan.*')}
+                                >
+                                    Rekapitulasi Laporan
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
                                     href={route('kasir.pelanggan.index')}
                                     active={route().current('kasir.pelanggan.*')}
                                 >
@@ -272,6 +301,29 @@ export default function AuthenticatedLayout({ header, children }) {
                             <ResponsiveNavLink method="post" href={route('logout')} as="button" className="text-rose-600 font-bold">
                                 Keluar Sistem
                             </ResponsiveNavLink>
+                        </div>
+
+                        <div className="mt-3 border-t border-slate-200/60 pt-3">
+                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                                Beralih Akun / Peran Cepat:
+                            </div>
+                            <div className="grid grid-cols-3 gap-1.5">
+                                {['Kasir', 'Produksi', 'Antar'].map((r) => (
+                                    <Link
+                                        key={r}
+                                        href={route('switch-role', r)}
+                                        method="post"
+                                        as="button"
+                                        className={`py-1.5 px-2 rounded-lg text-xs font-bold transition text-center ${
+                                            user?.peran === r
+                                                ? 'bg-[#0D9488] text-white shadow-xs'
+                                                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
+                                        }`}
+                                    >
+                                        {r}
+                                    </Link>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 </div>

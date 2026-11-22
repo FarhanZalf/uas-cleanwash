@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\Auth\RoleSwitcherController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Kasir\LaporanController;
 use App\Http\Controllers\Kasir\PengantaranController;
 use App\Http\Controllers\Kasir\TransaksiController;
 use App\Http\Controllers\Produksi\ProduksiController;
@@ -21,6 +23,11 @@ Route::get('/', function () {
 Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth'])
     ->name('dashboard');
+
+// Beralih Peran Cepat (Quick Role Switcher untuk testing & demo multi-role)
+Route::post('/switch-role/{peran}', [RoleSwitcherController::class, 'switch'])
+    ->middleware(['auth'])
+    ->name('switch-role');
 
 // Modul Role Kasir & Admin
 Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
@@ -55,6 +62,9 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->grou
 
     // Penjadwalan Kloter Pengantaran Kurir
     Route::resource('pengantaran', PengantaranController::class)->only(['index', 'store', 'show']);
+
+    // Rekapitulasi Laporan Keuangan, Piutang & Operasional
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
 });
 
 // Modul Role Produksi
