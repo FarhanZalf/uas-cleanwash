@@ -13,19 +13,14 @@ export default function KasirDashboard({ stats, transaksiTerbaru }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div>
-                        <h2 className="text-xl font-bold leading-tight text-slate-800">
+                        <h2 className="text-lg font-bold leading-tight text-[#134E4A]">
                             Meja Kerja Kasir & Administrasi
                         </h2>
-                        <p className="text-sm text-slate-500 mt-1">
-                            Pencatatan nota transaksi, penerimaan pembayaran, dan monitoring tagihan tempo.
+                        <p className="text-xs text-slate-500">
+                            Pencatatan transaksi, penerimaan pembayaran, dan monitoring tagihan tempo.
                         </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800 border border-blue-200">
-                            Peran: Kasir (Admin)
-                        </span>
                     </div>
                 </div>
             }
@@ -35,37 +30,37 @@ export default function KasirDashboard({ stats, transaksiTerbaru }) {
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
                 {/* 4 Stat Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Total Pelanggan</span>
-                            <span className="p-2 rounded-xl bg-blue-50 text-blue-600">👥</span>
+                            <span className="p-2 rounded-xl bg-teal-50 text-teal-700 text-lg">👥</span>
                         </div>
-                        <div className="mt-3 text-3xl font-extrabold text-slate-800">{stats?.totalPelanggan || 0}</div>
+                        <div className="mt-3 text-3xl font-extrabold text-[#134E4A]">{stats?.totalPelanggan || 0}</div>
                         <div className="text-xs text-slate-500 mt-1">Pelanggan terdaftar di sistem</div>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Transaksi Aktif</span>
-                            <span className="p-2 rounded-xl bg-amber-50 text-amber-600">🧺</span>
+                            <span className="p-2 rounded-xl bg-amber-50 text-amber-700 text-lg">🧺</span>
                         </div>
                         <div className="mt-3 text-3xl font-extrabold text-slate-800">{stats?.transaksiAktif || 0}</div>
                         <div className="text-xs text-amber-600 font-medium mt-1">Sedang dalam proses / antrean</div>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Tagihan Tempo</span>
-                            <span className="p-2 rounded-xl bg-rose-50 text-rose-600">⏳</span>
+                            <span className="p-2 rounded-xl bg-rose-50 text-rose-700 text-lg">⏳</span>
                         </div>
                         <div className="mt-3 text-3xl font-extrabold text-rose-600">{stats?.transaksiTempo || 0}</div>
                         <div className="text-xs text-slate-500 mt-1">Pakaian diambil belum lunas</div>
                     </div>
 
-                    <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="bg-white p-5 rounded-2xl border border-teal-100 shadow-2xs">
                         <div className="flex items-center justify-between">
                             <span className="text-xs font-bold uppercase tracking-wider text-slate-400">Transaksi Selesai</span>
-                            <span className="p-2 rounded-xl bg-emerald-50 text-emerald-600">✅</span>
+                            <span className="p-2 rounded-xl bg-emerald-50 text-emerald-700 text-lg">✅</span>
                         </div>
                         <div className="mt-3 text-3xl font-extrabold text-emerald-600">{stats?.transaksiSelesai || 0}</div>
                         <div className="text-xs text-slate-500 mt-1">Cucian tuntas & lunas</div>
@@ -73,20 +68,20 @@ export default function KasirDashboard({ stats, transaksiTerbaru }) {
                 </div>
 
                 {/* Modul Aksi Cepat Kasir */}
-                <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 text-white shadow-lg shadow-blue-500/20">
+                <div className="bg-gradient-to-r from-[#0D9488] to-[#134E4A] rounded-2xl p-6 text-white shadow-sm">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div>
                             <h3 className="text-lg font-bold">Operasional Kasir Siap Digunakan</h3>
-                            <p className="text-blue-100 text-sm mt-1">
+                            <p className="text-teal-100 text-xs mt-1">
                                 Kelola transaksi multi-layanan, snapshot harga, voucher promo, hingga pengantaran kurir.
                             </p>
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
                             <Link
                                 href={route('kasir.transaksi.create')}
-                                className="px-4 py-2.5 bg-white text-blue-700 hover:bg-blue-50 text-sm font-bold rounded-xl transition shadow-sm"
+                                className="px-4 py-2.5 bg-white text-[#0D9488] hover:bg-teal-50 text-xs font-bold rounded-xl transition shadow-xs cursor-pointer"
                             >
-                                + Transaksi Nota Baru
+                                + Buat Nota Transaksi Baru
                             </Link>
                         </div>
                     </div>

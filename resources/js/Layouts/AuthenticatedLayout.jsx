@@ -1,364 +1,361 @@
 import Dropdown from '@/Components/Dropdown';
-import NavLink from '@/Components/NavLink';
-import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
     const { auth, flash } = usePage().props;
     const user = auth.user;
-    const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(false);
 
     const displayName = user?.nama_petugas || user?.name || 'Petugas';
-    const roleBadgeColor = {
-        Kasir: 'bg-teal-50 text-teal-800 border-teal-200',
-        Produksi: 'bg-amber-50 text-amber-800 border-amber-200',
-        Antar: 'bg-emerald-50 text-emerald-800 border-emerald-200',
-    }[user?.peran] || 'bg-slate-100 text-slate-800 border-slate-200';
+    const isKasir = user?.peran === 'Kasir';
+
+    const menuOperasional = [
+        { label: 'Dashboard Kasir', routeName: 'kasir.dashboard', icon: '📊' },
+        { label: 'Transaksi Laundry', routeName: 'kasir.transaksi.index', activePrefix: 'kasir.transaksi.*', icon: '🧾' },
+        { label: 'Pengantaran Kurir', routeName: 'kasir.pengantaran.index', activePrefix: 'kasir.pengantaran.*', icon: '🛵' },
+    ];
+
+    const menuMaster = [
+        { label: 'Data Pelanggan', routeName: 'kasir.pelanggan.index', activePrefix: 'kasir.pelanggan.*', icon: '👥' },
+        { label: 'Jenis Layanan', routeName: 'kasir.layanan.index', activePrefix: 'kasir.layanan.*', icon: '🧺' },
+        { label: 'Voucher Promo', routeName: 'kasir.voucher.index', activePrefix: 'kasir.voucher.*', icon: '🎟️' },
+        { label: 'Akun Petugas', routeName: 'kasir.petugas.index', activePrefix: 'kasir.petugas.*', icon: '🛡️' },
+    ];
+
+    const menuKeuangan = [
+        { label: 'Rekap Laporan & Piutang', routeName: 'kasir.laporan.index', activePrefix: 'kasir.laporan.*', icon: '📈' },
+    ];
 
     return (
-        <div className="min-h-screen bg-[#F6FBF9] text-slate-800 antialiased">
-            {/* Top Navigation Bar */}
-            <nav className="border-b border-teal-100/80 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
-                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                    <div className="flex h-16 justify-between items-center">
-                        <div className="flex items-center">
-                            {/* Brand Logo */}
-                            <Link href="/dashboard" className="flex items-center space-x-3 group">
-                                <div className="h-10 w-10 rounded-xl bg-[#0D9488] flex items-center justify-center text-white font-black text-lg shadow-sm group-hover:bg-[#134E4A] transition-colors">
-                                    CW
-                                </div>
-                                <div className="flex flex-col">
-                                    <span className="text-lg font-extrabold text-[#134E4A] leading-tight tracking-tight">
-                                        CleanWash
-                                    </span>
-                                    <span className="text-[11px] text-teal-700/70 font-semibold tracking-wider uppercase">
-                                        Laundry Eco-Care
-                                    </span>
-                                </div>
-                            </Link>
+        <div className="min-h-screen bg-[#F6FBF9] text-slate-800 antialiased flex flex-col lg:flex-row">
+            {/* ========================================================= */}
+            {/* SIDEBAR KIRI KHUSUS ROLE KASIR / ADMIN */}
+            {/* ========================================================= */}
+            {isKasir && (
+                <>
+                    {/* Mobile Backdrop Overlay */}
+                    {sidebarOpen && (
+                        <div
+                            onClick={() => setSidebarOpen(false)}
+                            className="fixed inset-0 z-40 bg-slate-900/50 backdrop-blur-xs lg:hidden transition-opacity"
+                        />
+                    )}
 
-                            {/* Desktop Navigation Links */}
-                            <div className="hidden lg:-my-px lg:ms-8 lg:flex lg:space-x-1">
-                                {user?.peran === 'Kasir' && (
-                                    <>
-                                        <NavLink
-                                            href={route('kasir.dashboard')}
-                                            active={route().current('kasir.dashboard')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Dashboard
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.transaksi.index')}
-                                            active={route().current('kasir.transaksi.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Transaksi
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.pengantaran.index')}
-                                            active={route().current('kasir.pengantaran.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Pengantaran
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.laporan.index')}
-                                            active={route().current('kasir.laporan.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Laporan
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.pelanggan.index')}
-                                            active={route().current('kasir.pelanggan.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Pelanggan
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.layanan.index')}
-                                            active={route().current('kasir.layanan.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Jenis Layanan
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.voucher.index')}
-                                            active={route().current('kasir.voucher.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Voucher
-                                        </NavLink>
-                                        <NavLink
-                                            href={route('kasir.petugas.index')}
-                                            active={route().current('kasir.petugas.*')}
-                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                        >
-                                            Petugas
-                                        </NavLink>
-                                    </>
-                                )}
-
-                                {user?.peran === 'Produksi' && (
-                                    <NavLink
-                                        href={route('produksi.dashboard')}
-                                        active={route().current('produksi.dashboard')}
-                                        className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                    >
-                                        Papan Antrean Produksi
-                                    </NavLink>
-                                )}
-
-                                {user?.peran === 'Antar' && (
-                                    <NavLink
-                                        href={route('antar.dashboard')}
-                                        active={route().current('antar.dashboard')}
-                                        className="px-3 py-2 text-xs font-bold rounded-lg transition"
-                                    >
-                                        Tugas Pengantaran
-                                    </NavLink>
-                                )}
-                            </div>
-                        </div>
-
-                        {/* Right Profile & Badge & Role Switcher */}
-                        <div className="hidden sm:ms-6 sm:flex sm:items-center space-x-3">
-                            {/* Role Switcher Demo */}
-                            <div className="flex items-center gap-1 bg-slate-50 border border-teal-200/60 rounded-lg p-1 text-[11px]">
-                                <span className="text-slate-400 font-semibold px-1">Peran:</span>
-                                {['Kasir', 'Produksi', 'Antar'].map((r) => (
-                                    <Link
-                                        key={r}
-                                        href={route('switch-role', r)}
-                                        method="post"
-                                        as="button"
-                                        className={`px-2 py-0.5 rounded font-bold transition cursor-pointer ${
-                                            user?.peran === r
-                                                ? 'bg-[#0D9488] text-white shadow-xs'
-                                                : 'text-slate-600 hover:bg-slate-200/70 hover:text-slate-900'
-                                        }`}
-                                    >
-                                        {r}
-                                    </Link>
-                                ))}
-                            </div>
-
-                            <div className="relative">
-                                <Dropdown>
-                                    <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-lg">
-                                            <button
-                                                type="button"
-                                                className="inline-flex items-center rounded-lg border border-teal-200/80 bg-white px-3 py-1.5 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1]/30 transition"
-                                            >
-                                                <span>{displayName}</span>
-                                                <svg
-                                                    className="-me-0.5 ms-2 h-3.5 w-3.5 text-teal-600"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
+                    {/* Left Sidebar Container */}
+                    <aside
+                        className={`fixed inset-y-0 left-0 z-50 w-64 bg-white border-r border-teal-100 flex flex-col justify-between transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+                            sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+                        }`}
+                    >
+                        {/* Top: Logo & Brand */}
+                        <div>
+                            <div className="h-16 px-5 border-b border-teal-100 flex items-center justify-between">
+                                <Link href={route('kasir.dashboard')} className="flex items-center gap-3">
+                                    <div className="h-10 w-10 rounded-xl bg-[#0D9488] flex items-center justify-center text-white font-black text-lg shadow-sm">
+                                        CW
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-extrabold text-[#134E4A] leading-tight tracking-tight">
+                                            CleanWash
                                         </span>
-                                    </Dropdown.Trigger>
+                                        <span className="text-[10px] text-teal-700/80 font-bold uppercase tracking-wider">
+                                            Laundry ERP
+                                        </span>
+                                    </div>
+                                </Link>
 
-                                    <Dropdown.Content>
-                                        <div className="px-4 py-2 border-b border-slate-100 text-xs text-slate-500">
-                                            ID: <span className="font-mono font-bold text-teal-800">{user?.kode_petugas}</span>
-                                        </div>
-                                        <Dropdown.Link
-                                            href={route('logout')}
-                                            method="post"
-                                            as="button"
-                                            className="text-rose-600 font-semibold"
+                                {/* Close Button on Mobile */}
+                                <button
+                                    type="button"
+                                    onClick={() => setSidebarOpen(false)}
+                                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 lg:hidden cursor-pointer"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+
+                            {/* User Profile Mini Bar */}
+                            <div className="px-5 py-3.5 bg-[#F6FBF9] border-b border-teal-50 flex items-center gap-3">
+                                <div className="h-8 w-8 rounded-full bg-teal-100 text-[#134E4A] font-bold text-xs flex items-center justify-center">
+                                    {displayName.charAt(0)}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-bold text-slate-900 truncate">{displayName}</div>
+                                    <div className="flex items-center gap-1.5 mt-0.5">
+                                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                                        <span className="text-[10px] font-semibold text-teal-700 uppercase">Kasir & Admin</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Navigation Menu Groups */}
+                            <nav className="p-3 space-y-5 overflow-y-auto max-h-[calc(100vh-270px)]">
+                                {/* Group 1: Operasional */}
+                                <div>
+                                    <span className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        Operasional Gerai
+                                    </span>
+                                    <ul className="mt-1.5 space-y-1">
+                                        {menuOperasional.map((item) => {
+                                            const active = item.activePrefix
+                                                ? route().current(item.activePrefix)
+                                                : route().current(item.routeName);
+                                            return (
+                                                <li key={item.routeName}>
+                                                    <Link
+                                                        href={route(item.routeName)}
+                                                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                                                            active
+                                                                ? 'bg-[#0D9488] text-white shadow-xs'
+                                                                : 'text-slate-700 hover:bg-teal-50 hover:text-[#0D9488]'
+                                                        }`}
+                                                    >
+                                                        <span className="text-base">{item.icon}</span>
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+
+                                {/* Group 2: Master Data */}
+                                <div>
+                                    <span className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        Data Master
+                                    </span>
+                                    <ul className="mt-1.5 space-y-1">
+                                        {menuMaster.map((item) => {
+                                            const active = item.activePrefix
+                                                ? route().current(item.activePrefix)
+                                                : route().current(item.routeName);
+                                            return (
+                                                <li key={item.routeName}>
+                                                    <Link
+                                                        href={route(item.routeName)}
+                                                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                                                            active
+                                                                ? 'bg-[#0D9488] text-white shadow-xs'
+                                                                : 'text-slate-700 hover:bg-teal-50 hover:text-[#0D9488]'
+                                                        }`}
+                                                    >
+                                                        <span className="text-base">{item.icon}</span>
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+
+                                {/* Group 3: Keuangan */}
+                                <div>
+                                    <span className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                                        Laporan & Piutang
+                                    </span>
+                                    <ul className="mt-1.5 space-y-1">
+                                        {menuKeuangan.map((item) => {
+                                            const active = item.activePrefix
+                                                ? route().current(item.activePrefix)
+                                                : route().current(item.routeName);
+                                            return (
+                                                <li key={item.routeName}>
+                                                    <Link
+                                                        href={route(item.routeName)}
+                                                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+                                                            active
+                                                                ? 'bg-[#0D9488] text-white shadow-xs'
+                                                                : 'text-slate-700 hover:bg-teal-50 hover:text-[#0D9488]'
+                                                        }`}
+                                                    >
+                                                        <span className="text-base">{item.icon}</span>
+                                                        <span>{item.label}</span>
+                                                    </Link>
+                                                </li>
+                                            );
+                                        })}
+                                    </ul>
+                                </div>
+                            </nav>
+                        </div>
+
+                        {/* Bottom: Buka Tab Role Lain & Logout */}
+                        <div className="p-3 border-t border-teal-100 bg-[#F6FBF9]/60 space-y-2">
+                            {/* Widget Demo Multi-Tab 1 Role */}
+                            <div className="rounded-xl border border-teal-200 bg-white p-2.5 shadow-2xs">
+                                <span className="block text-[10px] font-extrabold uppercase tracking-wider text-teal-800 mb-1.5">
+                                    Buka Role Lain (Tab Baru):
+                                </span>
+                                <div className="grid grid-cols-2 gap-1.5 text-xs">
+                                    <a
+                                        href={route('demo-login', 'Produksi')}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="py-1.5 px-2 text-center rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold border border-amber-200 text-[11px] transition cursor-pointer"
+                                    >
+                                        ⚙️ Produksi ↗
+                                    </a>
+                                    <a
+                                        href={route('demo-login', 'Antar')}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="py-1.5 px-2 text-center rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-900 font-bold border border-emerald-200 text-[11px] transition cursor-pointer"
+                                    >
+                                        🛵 Kurir ↗
+                                    </a>
+                                </div>
+                            </div>
+
+                            <Link
+                                method="post"
+                                href={route('logout')}
+                                as="button"
+                                className="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
+                            >
+                                🚪 Keluar Sistem
+                            </Link>
+                        </div>
+                    </aside>
+                </>
+            )}
+
+            {/* ========================================================= */}
+            {/* KONTEN UTAMA DENGAN DUKUNGAN SIDEBAR */}
+            {/* ========================================================= */}
+            <div className={`flex-1 flex flex-col min-w-0 ${isKasir ? 'lg:pl-64' : ''}`}>
+                {/* Topbar Header */}
+                <header className="sticky top-0 z-30 bg-white/95 backdrop-blur border-b border-teal-100/80 shadow-2xs">
+                    <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                            {/* Mobile Hamburger Button for Kasir */}
+                            {isKasir && (
+                                <button
+                                    type="button"
+                                    onClick={() => setSidebarOpen(true)}
+                                    className="p-2 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 lg:hidden cursor-pointer"
+                                    aria-label="Buka Menu"
+                                >
+                                    ☰
+                                </button>
+                            )}
+
+                            {/* Brand Logo for Non-Kasir Roles */}
+                            {!isKasir && (
+                                <Link href="/dashboard" className="flex items-center gap-2.5">
+                                    <div className="h-9 w-9 rounded-xl bg-[#0D9488] flex items-center justify-center text-white font-black text-sm">
+                                        CW
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-base font-extrabold text-[#134E4A] leading-tight">
+                                            CleanWash
+                                        </span>
+                                        <span className="text-[10px] text-teal-700 font-bold uppercase">
+                                            {user?.peran === 'Produksi' ? 'Modul Produksi' : 'Modul Kurir Antar'}
+                                        </span>
+                                    </div>
+                                </Link>
+                            )}
+
+                            {/* Header Slot (Breadcrumb / Title) */}
+                            {header && (
+                                <div className="hidden sm:block">
+                                    {header}
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Topbar Right Actions */}
+                        <div className="flex items-center gap-2.5">
+                            {/* Link Tab Cepat untuk Produksi dan Antar */}
+                            {!isKasir && (
+                                <div className="hidden sm:flex items-center gap-1.5 text-xs">
+                                    <a
+                                        href={route('demo-login', 'Kasir')}
+                                        target="_blank"
+                                        rel="noreferrer"
+                                        className="py-1 px-2.5 rounded-lg border border-teal-200 bg-teal-50 text-teal-800 font-bold hover:bg-teal-100 cursor-pointer text-[11px]"
+                                    >
+                                        👤 Tab Kasir ↗
+                                    </a>
+                                    {user?.peran === 'Produksi' && (
+                                        <a
+                                            href={route('demo-login', 'Antar')}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="py-1 px-2.5 rounded-lg border border-emerald-200 bg-emerald-50 text-emerald-800 font-bold hover:bg-emerald-100 cursor-pointer text-[11px]"
                                         >
-                                            Keluar Sistem
-                                        </Dropdown.Link>
-                                    </Dropdown.Content>
-                                </Dropdown>
-                            </div>
-                        </div>
+                                            🛵 Tab Kurir ↗
+                                        </a>
+                                    )}
+                                    {user?.peran === 'Antar' && (
+                                        <a
+                                            href={route('demo-login', 'Produksi')}
+                                            target="_blank"
+                                            rel="noreferrer"
+                                            className="py-1 px-2.5 rounded-lg border border-amber-200 bg-amber-50 text-amber-800 font-bold hover:bg-amber-100 cursor-pointer text-[11px]"
+                                        >
+                                            ⚙️ Tab Produksi ↗
+                                        </a>
+                                    )}
+                                </div>
+                            )}
 
-                        {/* Hamburger Button for Mobile */}
-                        <div className="-me-2 flex items-center lg:hidden">
-                            <button
-                                onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
-                                className="inline-flex items-center justify-center rounded-lg p-2 text-teal-800 hover:bg-teal-50 focus:outline-none"
-                            >
-                                <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                                    <path
-                                        className={!showingNavigationDropdown ? 'inline-flex' : 'hidden'}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M4 6h16M4 12h16M4 18h16"
-                                    />
-                                    <path
-                                        className={showingNavigationDropdown ? 'inline-flex' : 'hidden'}
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth="2"
-                                        d="M6 18L18 6M6 6l12 12"
-                                    />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Mobile Dropdown */}
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' lg:hidden border-t border-teal-100 bg-white'}>
-                    <div className="space-y-1 px-3 py-2">
-                        {user?.peran === 'Kasir' && (
-                            <>
-                                <ResponsiveNavLink
-                                    href={route('kasir.dashboard')}
-                                    active={route().current('kasir.dashboard')}
-                                >
-                                    Dashboard
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.transaksi.index')}
-                                    active={route().current('kasir.transaksi.*')}
-                                >
-                                    Transaksi Laundry
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.pengantaran.index')}
-                                    active={route().current('kasir.pengantaran.*')}
-                                >
-                                    Pengantaran Kurir
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.laporan.index')}
-                                    active={route().current('kasir.laporan.*')}
-                                >
-                                    Rekapitulasi Laporan
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.pelanggan.index')}
-                                    active={route().current('kasir.pelanggan.*')}
-                                >
-                                    Data Pelanggan
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.layanan.index')}
-                                    active={route().current('kasir.layanan.*')}
-                                >
-                                    Jenis Layanan
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.voucher.index')}
-                                    active={route().current('kasir.voucher.*')}
-                                >
-                                    Voucher Promo
-                                </ResponsiveNavLink>
-                                <ResponsiveNavLink
-                                    href={route('kasir.petugas.index')}
-                                    active={route().current('kasir.petugas.*')}
-                                >
-                                    Akun Petugas
-                                </ResponsiveNavLink>
-                            </>
-                        )}
-                        {user?.peran === 'Produksi' && (
-                            <ResponsiveNavLink
-                                href={route('produksi.dashboard')}
-                                active={route().current('produksi.dashboard')}
-                            >
-                                Papan Produksi
-                            </ResponsiveNavLink>
-                        )}
-                        {user?.peran === 'Antar' && (
-                            <ResponsiveNavLink
-                                href={route('antar.dashboard')}
-                                active={route().current('antar.dashboard')}
-                            >
-                                Tugas Pengantaran
-                            </ResponsiveNavLink>
-                        )}
-                    </div>
-
-                    <div className="border-t border-teal-100 pb-3 pt-3 px-4 bg-teal-50/40">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <div className="text-sm font-bold text-slate-800">{displayName}</div>
-                                <div className="text-xs text-slate-500">{user?.email}</div>
-                            </div>
-                            <span className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${roleBadgeColor}`}>
+                            {/* Role Badge */}
+                            <span className="px-2.5 py-1 text-xs font-bold rounded-full border bg-teal-50 text-[#134E4A] border-teal-200">
                                 {user?.peran}
                             </span>
-                        </div>
-                        <div className="mt-3">
-                            <ResponsiveNavLink method="post" href={route('logout')} as="button" className="text-rose-600 font-bold">
-                                Keluar Sistem
-                            </ResponsiveNavLink>
-                        </div>
 
-                        <div className="mt-3 border-t border-slate-200/60 pt-3">
-                            <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                                Beralih Akun / Peran Cepat:
-                            </div>
-                            <div className="grid grid-cols-3 gap-1.5">
-                                {['Kasir', 'Produksi', 'Antar'].map((r) => (
-                                    <Link
-                                        key={r}
-                                        href={route('switch-role', r)}
-                                        method="post"
-                                        as="button"
-                                        className={`py-1.5 px-2 rounded-lg text-xs font-bold transition text-center ${
-                                            user?.peran === r
-                                                ? 'bg-[#0D9488] text-white shadow-xs'
-                                                : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
-                                        }`}
-                                    >
-                                        {r}
-                                    </Link>
-                                ))}
-                            </div>
+                            {/* User Dropdown for Non-Kasir */}
+                            {!isKasir && (
+                                <Link
+                                    method="post"
+                                    href={route('logout')}
+                                    as="button"
+                                    className="p-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer"
+                                >
+                                    Keluar
+                                </Link>
+                            )}
                         </div>
                     </div>
-                </div>
-            </nav>
 
-            {/* Flash Messages (Alert Banners) */}
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
+                    {/* Mobile Header Subtitle */}
+                    {header && (
+                        <div className="sm:hidden px-4 pb-3 border-t border-slate-100 pt-2">
+                            {header}
+                        </div>
+                    )}
+                </header>
+
+                {/* Flash Messages (Alert Banners) */}
                 {flash?.success && (
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 text-sm font-medium shadow-xs">
-                        <div className="flex items-center gap-2">
-                            <span className="text-teal-600 font-bold">✓ Sukses:</span>
-                            <span>{flash.success}</span>
+                    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 mt-4">
+                        <div className="flex items-center justify-between p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 text-xs font-bold shadow-2xs">
+                            <div className="flex items-center gap-2">
+                                <span className="text-teal-600 font-bold">✓ Sukses:</span>
+                                <span>{flash.success}</span>
+                            </div>
                         </div>
                     </div>
                 )}
 
                 {flash?.error && (
-                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-sm font-medium shadow-xs">
-                        <div className="flex items-center gap-2">
-                            <span className="text-rose-600 font-bold">✕ Peringatan:</span>
-                            <span>{flash.error}</span>
+                    <div className="mx-auto max-w-7xl w-full px-4 sm:px-6 lg:px-8 mt-4">
+                        <div className="flex items-center justify-between p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-xs font-bold shadow-2xs">
+                            <div className="flex items-center gap-2">
+                                <span className="text-rose-600 font-bold">✕ Galat:</span>
+                                <span>{flash.error}</span>
+                            </div>
                         </div>
                     </div>
                 )}
+
+                {/* Main Page Content */}
+                <main className="flex-1 py-6">
+                    {children}
+                </main>
             </div>
-
-            {header && (
-                <header className="bg-white border-b border-teal-100/70 mt-3">
-                    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-                        {header}
-                    </div>
-                </header>
-            )}
-
-            <main className="py-6">{children}</main>
         </div>
     );
 }

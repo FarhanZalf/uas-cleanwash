@@ -29,6 +29,9 @@ Route::post('/switch-role/{peran}', [RoleSwitcherController::class, 'switch'])
     ->middleware(['auth'])
     ->name('switch-role');
 
+Route::match(['get', 'post'], '/demo-login/{peran}', [RoleSwitcherController::class, 'demoLogin'])
+    ->name('demo-login');
+
 // Modul Role Kasir & Admin
 Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'kasir'])->name('dashboard');

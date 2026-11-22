@@ -99,31 +99,28 @@ export default function Login({ status }) {
 
             {/* Tombol Demo Akun Cepat */}
             <div className="mt-6 pt-5 border-t border-slate-100">
-                <span className="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                    Akun Cepat (Testing Multi-Role):
+                <span className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Akses Langsung 1-Klik (Demo Semua Role):
                 </span>
                 <div className="grid grid-cols-3 gap-2">
-                    <button
-                        type="button"
-                        onClick={() => fillAccount('kasir@cleanwash.local', 'password')}
-                        className="py-1.5 px-2 text-center rounded-lg bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs font-semibold border border-blue-200/60 transition"
+                    <a
+                        href={route('demo-login', 'Kasir')}
+                        className="py-2 px-2 text-center rounded-xl bg-teal-50 hover:bg-teal-100 text-[#0D9488] text-xs font-bold border border-teal-200 transition cursor-pointer"
                     >
                         👤 Kasir
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => fillAccount('produksi@cleanwash.local', 'password')}
-                        className="py-1.5 px-2 text-center rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 text-xs font-semibold border border-amber-200/60 transition"
+                    </a>
+                    <a
+                        href={route('demo-login', 'Produksi')}
+                        className="py-2 px-2 text-center rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition cursor-pointer"
                     >
                         ⚙️ Produksi
-                    </button>
-                    <button
-                        type="button"
-                        onClick={() => fillAccount('antar@cleanwash.local', 'password')}
-                        className="py-1.5 px-2 text-center rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-xs font-semibold border border-emerald-200/60 transition"
+                    </a>
+                    <a
+                        href={route('demo-login', 'Antar')}
+                        className="py-2 px-2 text-center rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition cursor-pointer"
                     >
-                        🛵 Antar
-                    </button>
+                        🛵 Kurir
+                    </a>
                 </div>
             </div>
         </GuestLayout>
