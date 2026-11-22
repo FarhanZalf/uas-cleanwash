@@ -105,6 +105,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 <li key={item.routeName}>
                                                     <Link
                                                         href={route(item.routeName)}
+                                                        prefetch
                                                         className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                                                             active
                                                                 ? 'bg-[#0D9488] text-white shadow-xs'
@@ -134,6 +135,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 <li key={item.routeName}>
                                                     <Link
                                                         href={route(item.routeName)}
+                                                        prefetch
                                                         className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                                                             active
                                                                 ? 'bg-[#0D9488] text-white shadow-xs'
@@ -163,6 +165,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                                 <li key={item.routeName}>
                                                     <Link
                                                         href={route(item.routeName)}
+                                                        prefetch
                                                         className={`flex items-center gap-3 px-3 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
                                                             active
                                                                 ? 'bg-[#0D9488] text-white shadow-xs'

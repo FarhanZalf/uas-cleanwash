@@ -15,9 +15,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect halaman depan ke halaman login internal
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::redirect('/', '/login');
 
 // Dispatcher Dashboard: arahkan otomatis sesuai peran petugas
 Route::get('/dashboard', [DashboardController::class, 'index'])

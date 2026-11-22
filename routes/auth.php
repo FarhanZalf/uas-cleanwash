@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
     // Registrasi publik dinonaktifkan: akun petugas dikelola internal oleh Kasir/Admin
-    Route::get('register', fn () => redirect()->route('login'))->name('register');
+    Route::redirect('register', 'login')->name('register');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
