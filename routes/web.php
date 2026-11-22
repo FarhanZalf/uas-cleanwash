@@ -28,6 +28,9 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->grou
     Route::post('transaksi/cek-voucher', [TransaksiController::class, 'cekVoucher'])->name('transaksi.cek-voucher');
     Route::post('transaksi/pelanggan-cepat', [TransaksiController::class, 'pelangganCepat'])->name('transaksi.pelanggan-cepat');
     Route::get('transaksi/{transaksi}/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
+    Route::post('transaksi/{transaksi}/penyesuaian', [TransaksiController::class, 'penyesuaian'])->name('transaksi.penyesuaian');
+    Route::post('transaksi/{transaksi}/batalkan', [TransaksiController::class, 'batalkan'])->name('transaksi.batalkan');
+    Route::post('transaksi/{transaksi}/pelunasan', [TransaksiController::class, 'pelunasan'])->name('transaksi.pelunasan');
     Route::resource('transaksi', TransaksiController::class)
         ->parameters(['transaksi' => 'transaksi'])
         ->only(['index', 'create', 'store', 'show']);

@@ -3,9 +3,15 @@
 namespace App\Http\Controllers\Kasir;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Kasir\PelunasanRequest;
+use App\Http\Requests\Kasir\PembatalanRequest;
+use App\Http\Requests\Kasir\PenyesuaianRequest;
 use App\Http\Requests\Kasir\TransaksiRequest;
+use App\Models\DetailPakaian;
 use App\Models\JenisLayanan;
 use App\Models\Pelanggan;
+use App\Models\Pembayaran;
+use App\Models\RiwayatStatusProses;
 use App\Models\TransaksiLaundry;
 use App\Models\Voucher;
 use Illuminate\Http\JsonResponse;
@@ -245,6 +251,170 @@ class TransaksiController extends Controller
         return response()->json([
             'pelanggan' => $pelanggan->only(['id', 'kode_pelanggan', 'nama', 'no_telepon', 'alamat', 'hak_bayar_belakangan']),
         ], 201);
+    }
+
+    public function penyesuaian(PenyesuaianRequest $request, TransaksiLaundry $transaksi): RedirectResponse
+    {
+        if ($transaksi->status_transaksi !== 'Aktif') {
+            throw ValidationException::withMessages([
+                'items' => 'Penyesuaian hanya dapat dilakukan pada transaksi berstatus Aktif.',
+            ]);
+        }
+
+        if ($transaksi->status_proses_terkini !== 'Diterima') {
+            throw ValidationException::withMessages([
+                'items' => 'Timbang ulang hanya dapat dilakukan saat cucian masih berada di tahap Diterima.',
+            ]);
+        }
+
+        $data = $request->validated();
+
+        DB::transaction(function () use ($transaksi, $data) {
+            foreach ($data['items'] as $itemData) {
+                $detail = DetailPakaian::where('id', $itemData['id'])
+                    ->where('transaksi_laundry_id', $transaksi->id)
+                    ->firstOrFail();
+
+                $jumlah = (float) $itemData['berat_atau_jumlah'];
+                $subtotal = round($jumlah * (float) $detail->harga_saat_transaksi, 2);
+
+                $detail->update([
+                    'berat_atau_jumlah' => $jumlah,
+                    'subtotal' => $subtotal,
+                ]);
+            }
+
+            $totalHargaBaru = (float) $transaksi->detailPakaian()->sum('subtotal');
+            $transaksi->update(['total_harga' => $totalHargaBaru]);
+            $transaksi->hitungUlangTagihan();
+
+            RiwayatStatusProses::create([
+                'transaksi_laundry_id' => $transaksi->id,
+                'petugas_id' => auth()->id(),
+                'tahap' => $transaksi->status_proses_terkini,
+                'waktu_update' => now(),
+                'catatan' => 'Penyesuaian timbang ulang oleh kasir: ' . ($data['catatan'] ?? 'Pembaruan kuantitas/berat cucian.'),
+            ]);
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Penyesuaian timbang ulang pakaian berhasil disimpan.');
+    }
+
+    public function batalkan(PembatalanRequest $request, TransaksiLaundry $transaksi): RedirectResponse
+    {
+        if ($transaksi->status_transaksi !== 'Aktif') {
+            throw ValidationException::withMessages([
+                'alasan_batal' => 'Hanya transaksi berstatus Aktif yang dapat dibatalkan.',
+            ]);
+        }
+
+        $persenBiaya = $transaksi->persentaseBiayaBatal();
+
+        if ($persenBiaya === null) {
+            throw ValidationException::withMessages([
+                'alasan_batal' => 'Pesanan telah diproses ke tahap lanjut (' . $transaksi->status_proses_terkini . ') dan tidak dapat dibatalkan.',
+            ]);
+        }
+
+        $data = $request->validated();
+
+        DB::transaction(function () use ($transaksi, $data, $persenBiaya) {
+            $biayaBatal = round(((float) $transaksi->total_harga * $persenBiaya) / 100, 2);
+
+            $transaksi->update([
+                'status_transaksi' => 'Batal',
+            ]);
+
+            if ($transaksi->voucher_id && $transaksi->voucher) {
+                $transaksi->voucher->update(['status_terpakai' => false]);
+            }
+
+            RiwayatStatusProses::create([
+                'transaksi_laundry_id' => $transaksi->id,
+                'petugas_id' => auth()->id(),
+                'tahap' => $transaksi->status_proses_terkini,
+                'waktu_update' => now(),
+                'catatan' => sprintf(
+                    'Pesanan dibatalkan. Alasan: %s. Biaya pembatalan proporsional (%d%%): Rp %s.',
+                    $data['alasan_batal'],
+                    $persenBiaya,
+                    number_format($biayaBatal, 0, ',', '.')
+                ),
+            ]);
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Transaksi berhasil dibatalkan.');
+    }
+
+    public function pelunasan(PelunasanRequest $request, TransaksiLaundry $transaksi): RedirectResponse
+    {
+        if ($transaksi->status_transaksi !== 'Aktif') {
+            throw ValidationException::withMessages([
+                'jenis_aksi' => 'Pelunasan hanya dapat dilakukan pada transaksi yang masih Aktif.',
+            ]);
+        }
+
+        $data = $request->validated();
+        $pelanggan = $transaksi->pelanggan;
+
+        DB::transaction(function () use ($transaksi, $pelanggan, $data) {
+            if ($data['jenis_aksi'] === 'pelunasan') {
+                $nominal = (float) ($data['nominal'] ?? 0);
+                if ($nominal > 0) {
+                    Pembayaran::create([
+                        'transaksi_laundry_id' => $transaksi->id,
+                        'petugas_id' => auth()->id(),
+                        'jenis' => 'Pelunasan',
+                        'nominal' => $nominal,
+                        'metode' => $data['metode_pembayaran'],
+                        'tanggal_bayar' => now(),
+                        'catatan' => $data['catatan'] ?? null,
+                    ]);
+
+                    $transaksi->hitungUlangTagihan();
+                }
+
+                if ($transaksi->sisa_tagihan <= 0) {
+                    $transaksi->update(['status_bayar' => 'Lunas']);
+                }
+            } elseif ($data['jenis_aksi'] === 'tempo') {
+                if (! $pelanggan->hak_bayar_belakangan) {
+                    throw ValidationException::withMessages([
+                        'jenis_aksi' => 'Pelanggan tidak memiliki izin bayar tempo (hak bayar belakangan).',
+                    ]);
+                }
+                $transaksi->update(['status_bayar' => 'Tempo']);
+            }
+
+            if (! empty($data['serahkan_cucian'])) {
+                if ($transaksi->status_proses_terkini !== 'Selesai') {
+                    throw ValidationException::withMessages([
+                        'serahkan_cucian' => 'Cucian belum selesai diproses di bagian produksi.',
+                    ]);
+                }
+
+                if (! in_array($transaksi->status_bayar, ['Lunas', 'Tempo'], true)) {
+                    throw ValidationException::withMessages([
+                        'serahkan_cucian' => 'Cucian hanya dapat diserahkan jika sudah Lunas atau menggunakan fasilitas Tempo.',
+                    ]);
+                }
+
+                $transaksi->update(['status_transaksi' => 'Selesai']);
+
+                RiwayatStatusProses::create([
+                    'transaksi_laundry_id' => $transaksi->id,
+                    'petugas_id' => auth()->id(),
+                    'tahap' => 'Selesai',
+                    'waktu_update' => now(),
+                    'catatan' => "Cucian diserahkan kepada pelanggan (Status: {$transaksi->status_bayar}).",
+                ]);
+            }
+        });
+
+        return redirect()->route('kasir.transaksi.show', $transaksi)
+            ->with('success', 'Status pembayaran dan penyerahan cucian berhasil diperbarui.');
     }
 
     private function dataNota(TransaksiLaundry $transaksi): array

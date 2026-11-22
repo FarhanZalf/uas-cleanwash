@@ -87,6 +87,16 @@ class TransaksiLaundry extends Model
         return $tahapan[$posisiSekarang + 1];
     }
 
+    public function persentaseBiayaBatal(): ?int
+    {
+        return match ($this->status_proses_terkini) {
+            'Diterima' => 0,
+            'Dicuci' => 50,
+            'Dikeringkan' => 75,
+            default => null,
+        };
+    }
+
     /**
      * Menghitung ulang sisa tagihan berdasarkan rumus deterministik:
      * sisa_tagihan = total_harga - potongan_voucher - total_kompensasi - total_pembayaran
