@@ -38,6 +38,16 @@ class TransaksiLaundry extends Model
         ];
     }
 
+    // Skema tidak menyimpan kolom potongan; nilainya diturunkan dari voucher dan dibatasi total harga.
+    public function potonganVoucher(): float
+    {
+        if (! $this->voucher) {
+            return 0.0;
+        }
+
+        return min((float) $this->voucher->nilai_potongan, (float) $this->total_harga);
+    }
+
     public function pelanggan(): BelongsTo
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id');

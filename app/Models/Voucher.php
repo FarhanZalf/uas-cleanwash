@@ -28,6 +28,23 @@ class Voucher extends Model
         ];
     }
 
+    public static function alasanTidakBerlaku(?self $voucher): ?string
+    {
+        if (! $voucher) {
+            return 'Kode voucher tidak ditemukan.';
+        }
+
+        if ($voucher->status_terpakai) {
+            return 'Voucher ini sudah dipakai di nota lain.';
+        }
+
+        if ($voucher->masa_berlaku->lt(today())) {
+            return 'Voucher kedaluwarsa sejak ' . $voucher->masa_berlaku->format('d/m/Y') . '.';
+        }
+
+        return null;
+    }
+
     public function transaksiLaundry(): HasOne
     {
         return $this->hasOne(TransaksiLaundry::class, 'voucher_id');

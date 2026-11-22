@@ -50,6 +50,13 @@ export default function AuthenticatedLayout({ header, children }) {
                                             Dashboard
                                         </NavLink>
                                         <NavLink
+                                            href={route('kasir.transaksi.index')}
+                                            active={route().current('kasir.transaksi.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Transaksi
+                                        </NavLink>
+                                        <NavLink
                                             href={route('kasir.pelanggan.index')}
                                             active={route().current('kasir.pelanggan.*')}
                                             className="px-3 py-2 text-xs font-bold rounded-lg transition"
@@ -187,6 +194,12 @@ export default function AuthenticatedLayout({ header, children }) {
                                     active={route().current('kasir.dashboard')}
                                 >
                                     Dashboard
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('kasir.transaksi.index')}
+                                    active={route().current('kasir.transaksi.*')}
+                                >
+                                    Transaksi Laundry
                                 </ResponsiveNavLink>
                                 <ResponsiveNavLink
                                     href={route('kasir.pelanggan.index')}

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Kasir\TransaksiController;
 use App\Http\Controllers\Master\JenisLayananController;
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\PetugasController;
@@ -21,6 +22,14 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // Modul Role Kasir & Admin
 Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'kasir'])->name('dashboard');
+
+    // Transaksi Laundry Masuk & Cetak Nota
+    Route::post('transaksi/cek-voucher', [TransaksiController::class, 'cekVoucher'])->name('transaksi.cek-voucher');
+    Route::post('transaksi/pelanggan-cepat', [TransaksiController::class, 'pelangganCepat'])->name('transaksi.pelanggan-cepat');
+    Route::get('transaksi/{transaksi}/cetak', [TransaksiController::class, 'cetak'])->name('transaksi.cetak');
+    Route::resource('transaksi', TransaksiController::class)
+        ->parameters(['transaksi' => 'transaksi'])
+        ->only(['index', 'create', 'store', 'show']);
 
     // Master Pelanggan
     Route::resource('pelanggan', PelangganController::class)->except(['create', 'show', 'edit']);

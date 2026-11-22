@@ -82,12 +82,12 @@ export default function KasirDashboard({ stats, transaksiTerbaru }) {
                             </p>
                         </div>
                         <div className="flex flex-wrap items-center gap-3">
-                            <button
-                                type="button"
+                            <Link
+                                href={route('kasir.transaksi.create')}
                                 className="px-4 py-2.5 bg-white text-blue-700 hover:bg-blue-50 text-sm font-bold rounded-xl transition shadow-sm"
                             >
                                 + Transaksi Nota Baru
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
