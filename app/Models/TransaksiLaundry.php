@@ -48,6 +48,66 @@ class TransaksiLaundry extends Model
         return min((float) $this->voucher->nilai_potongan, (float) $this->total_harga);
     }
 
+    /**
+     * Mengambil urutan tahapan yang berlaku untuk transaksi ini berdasarkan
+     * gabungan JSON tahapan_proses seluruh item pakaian di dalamnya.
+     */
+    public function tahapanBerlaku(): array
+    {
+        $semuaTahapan = ['Diterima', 'Dicuci', 'Dikeringkan', 'Disetrika', 'Selesai'];
+
+        $tahapanDibutuhkan = $this->detailPakaian
+            ->flatMap(fn ($item) => $item->jenisLayanan?->tahapan_proses ?? [])
+            ->unique()
+            ->all();
+
+        if (empty($tahapanDibutuhkan)) {
+            return $semuaTahapan;
+        }
+
+        // Tetap menjaga urutan standar proses laundry
+        return array_values(array_filter(
+            $semuaTahapan,
+            fn ($tahap) => in_array($tahap, $tahapanDibutuhkan, true)
+        ));
+    }
+
+    /**
+     * Menentukan tahap berikutnya yang sah sesuai alur tahapan dinamis.
+     */
+    public function tahapBerikutnya(): ?string
+    {
+        $tahapan = $this->tahapanBerlaku();
+        $posisiSekarang = array_search($this->status_proses_terkini, $tahapan, true);
+
+        if ($posisiSekarang === false || $posisiSekarang >= count($tahapan) - 1) {
+            return null;
+        }
+
+        return $tahapan[$posisiSekarang + 1];
+    }
+
+    /**
+     * Menghitung ulang sisa tagihan berdasarkan rumus deterministik:
+     * sisa_tagihan = total_harga - potongan_voucher - total_kompensasi - total_pembayaran
+     */
+    public function hitungUlangTagihan(): void
+    {
+        $totalBayar = (float) $this->pembayaran()->sum('nominal');
+        $potonganVoucher = $this->potonganVoucher();
+        $totalKompensasi = (float) $this->total_kompensasi;
+        $totalHarga = (float) $this->total_harga;
+
+        $sisa = round($totalHarga - $potonganVoucher - $totalKompensasi - $totalBayar, 2);
+        $this->sisa_tagihan = max($sisa, 0);
+
+        if ($this->sisa_tagihan <= 0 && in_array($this->status_bayar, ['Belum', 'DP'], true)) {
+            $this->status_bayar = 'Lunas';
+        }
+
+        $this->save();
+    }
+
     public function pelanggan(): BelongsTo
     {
         return $this->belongsTo(Pelanggan::class, 'pelanggan_id');

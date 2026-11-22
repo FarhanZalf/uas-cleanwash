@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Kasir\TransaksiController;
+use App\Http\Controllers\Produksi\ProduksiController;
 use App\Http\Controllers\Master\JenisLayananController;
 use App\Http\Controllers\Master\PelangganController;
 use App\Http\Controllers\Master\PetugasController;
@@ -50,7 +51,9 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->grou
 
 // Modul Role Produksi
 Route::middleware(['auth', 'role:Produksi'])->prefix('produksi')->name('produksi.')->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'produksi'])->name('dashboard');
+    Route::get('/dashboard', [ProduksiController::class, 'index'])->name('dashboard');
+    Route::post('/transaksi/{transaksi}/update-tahap', [ProduksiController::class, 'updateTahap'])->name('update-tahap');
+    Route::post('/transaksi/{transaksi}/lapor-kerusakan', [ProduksiController::class, 'laporKerusakan'])->name('lapor-kerusakan');
 });
 
 // Modul Role Antar (Kurir)
