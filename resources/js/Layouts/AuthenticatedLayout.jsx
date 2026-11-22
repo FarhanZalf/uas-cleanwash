@@ -1,4 +1,3 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import Dropdown from '@/Components/Dropdown';
 import NavLink from '@/Components/NavLink';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
@@ -6,40 +5,77 @@ import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function AuthenticatedLayout({ header, children }) {
-    const user = usePage().props.auth.user;
+    const { auth, flash } = usePage().props;
+    const user = auth.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
 
     const displayName = user?.nama_petugas || user?.name || 'Petugas';
     const roleBadgeColor = {
-        Kasir: 'bg-blue-100 text-blue-800 border-blue-200',
-        Produksi: 'bg-amber-100 text-amber-800 border-amber-200',
-        Antar: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-    }[user?.peran] || 'bg-gray-100 text-gray-800 border-gray-200';
+        Kasir: 'bg-teal-50 text-teal-800 border-teal-200',
+        Produksi: 'bg-amber-50 text-amber-800 border-amber-200',
+        Antar: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+    }[user?.peran] || 'bg-slate-100 text-slate-800 border-slate-200';
 
     return (
-        <div className="min-h-screen bg-slate-50">
-            <nav className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-30">
+        <div className="min-h-screen bg-[#F6FBF9] text-slate-800 antialiased">
+            {/* Top Navigation Bar */}
+            <nav className="border-b border-teal-100/80 bg-white/95 backdrop-blur sticky top-0 z-30 shadow-xs">
                 <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                     <div className="flex h-16 justify-between items-center">
                         <div className="flex items-center">
-                            <Link href="/dashboard" className="flex items-center space-x-3">
-                                <div className="h-10 w-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold shadow-md shadow-blue-500/20">
+                            {/* Brand Logo */}
+                            <Link href="/dashboard" className="flex items-center space-x-3 group">
+                                <div className="h-10 w-10 rounded-xl bg-[#0D9488] flex items-center justify-center text-white font-black text-lg shadow-sm group-hover:bg-[#134E4A] transition-colors">
                                     CW
                                 </div>
                                 <div className="flex flex-col">
-                                    <span className="text-lg font-bold text-slate-800 leading-tight">CleanWash</span>
-                                    <span className="text-xs text-slate-500 font-medium">Sistem Laundry</span>
+                                    <span className="text-lg font-extrabold text-[#134E4A] leading-tight tracking-tight">
+                                        CleanWash
+                                    </span>
+                                    <span className="text-[11px] text-teal-700/70 font-semibold tracking-wider uppercase">
+                                        Laundry Eco-Care
+                                    </span>
                                 </div>
                             </Link>
 
-                            <div className="hidden space-x-6 sm:-my-px sm:ms-10 sm:flex">
+                            {/* Desktop Navigation Links */}
+                            <div className="hidden lg:-my-px lg:ms-8 lg:flex lg:space-x-1">
                                 {user?.peran === 'Kasir' && (
                                     <>
                                         <NavLink
                                             href={route('kasir.dashboard')}
                                             active={route().current('kasir.dashboard')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
                                         >
-                                            Dashboard Kasir
+                                            Dashboard
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('kasir.pelanggan.index')}
+                                            active={route().current('kasir.pelanggan.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Pelanggan
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('kasir.layanan.index')}
+                                            active={route().current('kasir.layanan.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Jenis Layanan
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('kasir.voucher.index')}
+                                            active={route().current('kasir.voucher.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Voucher
+                                        </NavLink>
+                                        <NavLink
+                                            href={route('kasir.petugas.index')}
+                                            active={route().current('kasir.petugas.*')}
+                                            className="px-3 py-2 text-xs font-bold rounded-lg transition"
+                                        >
+                                            Petugas
                                         </NavLink>
                                     </>
                                 )}
@@ -48,8 +84,9 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <NavLink
                                         href={route('produksi.dashboard')}
                                         active={route().current('produksi.dashboard')}
+                                        className="px-3 py-2 text-xs font-bold rounded-lg transition"
                                     >
-                                        Papan Produksi
+                                        Papan Antrean Produksi
                                     </NavLink>
                                 )}
 
@@ -57,6 +94,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <NavLink
                                         href={route('antar.dashboard')}
                                         active={route().current('antar.dashboard')}
+                                        className="px-3 py-2 text-xs font-bold rounded-lg transition"
                                     >
                                         Tugas Pengantaran
                                     </NavLink>
@@ -64,22 +102,23 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
+                        {/* Right Profile & Badge */}
                         <div className="hidden sm:ms-6 sm:flex sm:items-center space-x-3">
-                            <span className={`px-2.5 py-1 text-xs font-semibold rounded-full border ${roleBadgeColor}`}>
+                            <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full border ${roleBadgeColor}`}>
                                 {user?.peran}
                             </span>
 
-                            <div className="relative ms-3">
+                            <div className="relative">
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
+                                        <span className="inline-flex rounded-lg">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus:outline-none transition"
+                                                className="inline-flex items-center rounded-lg border border-teal-200/80 bg-white px-3 py-1.5 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1]/30 transition"
                                             >
                                                 <span>{displayName}</span>
                                                 <svg
-                                                    className="-me-0.5 ms-2 h-4 w-4 text-slate-400"
+                                                    className="-me-0.5 ms-2 h-3.5 w-3.5 text-teal-600"
                                                     xmlns="http://www.w3.org/2000/svg"
                                                     viewBox="0 0 20 20"
                                                     fill="currentColor"
@@ -96,13 +135,13 @@ export default function AuthenticatedLayout({ header, children }) {
 
                                     <Dropdown.Content>
                                         <div className="px-4 py-2 border-b border-slate-100 text-xs text-slate-500">
-                                            Kode: <span className="font-semibold text-slate-700">{user?.kode_petugas}</span>
+                                            ID: <span className="font-mono font-bold text-teal-800">{user?.kode_petugas}</span>
                                         </div>
                                         <Dropdown.Link
                                             href={route('logout')}
                                             method="post"
                                             as="button"
-                                            className="text-red-600 font-medium"
+                                            className="text-rose-600 font-semibold"
                                         >
                                             Keluar Sistem
                                         </Dropdown.Link>
@@ -111,11 +150,11 @@ export default function AuthenticatedLayout({ header, children }) {
                             </div>
                         </div>
 
-                        {/* Hamburger button for mobile */}
-                        <div className="-me-2 flex items-center sm:hidden">
+                        {/* Hamburger Button for Mobile */}
+                        <div className="-me-2 flex items-center lg:hidden">
                             <button
                                 onClick={() => setShowingNavigationDropdown((previousState) => !previousState)}
-                                className="inline-flex items-center justify-center rounded-md p-2 text-slate-500 hover:bg-slate-100 focus:outline-none"
+                                className="inline-flex items-center justify-center rounded-lg p-2 text-teal-800 hover:bg-teal-50 focus:outline-none"
                             >
                                 <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                                     <path
@@ -138,16 +177,42 @@ export default function AuthenticatedLayout({ header, children }) {
                     </div>
                 </div>
 
-                {/* Mobile Navigation Menu */}
-                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden border-t border-slate-200 bg-white'}>
-                    <div className="space-y-1 pb-3 pt-2">
+                {/* Mobile Dropdown */}
+                <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' lg:hidden border-t border-teal-100 bg-white'}>
+                    <div className="space-y-1 px-3 py-2">
                         {user?.peran === 'Kasir' && (
-                            <ResponsiveNavLink
-                                href={route('kasir.dashboard')}
-                                active={route().current('kasir.dashboard')}
-                            >
-                                Dashboard Kasir
-                            </ResponsiveNavLink>
+                            <>
+                                <ResponsiveNavLink
+                                    href={route('kasir.dashboard')}
+                                    active={route().current('kasir.dashboard')}
+                                >
+                                    Dashboard
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('kasir.pelanggan.index')}
+                                    active={route().current('kasir.pelanggan.*')}
+                                >
+                                    Data Pelanggan
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('kasir.layanan.index')}
+                                    active={route().current('kasir.layanan.*')}
+                                >
+                                    Jenis Layanan
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('kasir.voucher.index')}
+                                    active={route().current('kasir.voucher.*')}
+                                >
+                                    Voucher Promo
+                                </ResponsiveNavLink>
+                                <ResponsiveNavLink
+                                    href={route('kasir.petugas.index')}
+                                    active={route().current('kasir.petugas.*')}
+                                >
+                                    Akun Petugas
+                                </ResponsiveNavLink>
+                            </>
                         )}
                         {user?.peran === 'Produksi' && (
                             <ResponsiveNavLink
@@ -167,19 +232,18 @@ export default function AuthenticatedLayout({ header, children }) {
                         )}
                     </div>
 
-                    <div className="border-t border-slate-200 pb-3 pt-4 px-4 bg-slate-50">
+                    <div className="border-t border-teal-100 pb-3 pt-3 px-4 bg-teal-50/40">
                         <div className="flex items-center justify-between">
                             <div>
-                                <div className="text-sm font-semibold text-slate-800">{displayName}</div>
+                                <div className="text-sm font-bold text-slate-800">{displayName}</div>
                                 <div className="text-xs text-slate-500">{user?.email}</div>
                             </div>
                             <span className={`px-2 py-0.5 text-xs font-semibold rounded-full border ${roleBadgeColor}`}>
                                 {user?.peran}
                             </span>
                         </div>
-
                         <div className="mt-3">
-                            <ResponsiveNavLink method="post" href={route('logout')} as="button" className="text-red-600 font-medium">
+                            <ResponsiveNavLink method="post" href={route('logout')} as="button" className="text-rose-600 font-bold">
                                 Keluar Sistem
                             </ResponsiveNavLink>
                         </div>
@@ -187,8 +251,29 @@ export default function AuthenticatedLayout({ header, children }) {
                 </div>
             </nav>
 
+            {/* Flash Messages (Alert Banners) */}
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 mt-4">
+                {flash?.success && (
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-teal-50 border border-teal-200 text-teal-900 text-sm font-medium shadow-xs">
+                        <div className="flex items-center gap-2">
+                            <span className="text-teal-600 font-bold">✓ Sukses:</span>
+                            <span>{flash.success}</span>
+                        </div>
+                    </div>
+                )}
+
+                {flash?.error && (
+                    <div className="flex items-center justify-between p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-900 text-sm font-medium shadow-xs">
+                        <div className="flex items-center gap-2">
+                            <span className="text-rose-600 font-bold">✕ Peringatan:</span>
+                            <span>{flash.error}</span>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             {header && (
-                <header className="bg-white border-b border-slate-200">
+                <header className="bg-white border-b border-teal-100/70 mt-3">
                     <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
                         {header}
                     </div>

@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Master\JenisLayananController;
+use App\Http\Controllers\Master\PelangganController;
+use App\Http\Controllers\Master\PetugasController;
+use App\Http\Controllers\Master\VoucherController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +21,22 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
 // Modul Role Kasir & Admin
 Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'kasir'])->name('dashboard');
+
+    // Master Pelanggan
+    Route::resource('pelanggan', PelangganController::class)->except(['create', 'show', 'edit']);
+
+    // Master Jenis Layanan
+    Route::resource('layanan', JenisLayananController::class)
+        ->parameters(['layanan' => 'jenis_layanan'])
+        ->except(['create', 'show', 'edit']);
+
+    // Master Voucher Promo
+    Route::resource('voucher', VoucherController::class)->except(['create', 'show', 'edit']);
+
+    // Master Akun Petugas
+    Route::resource('petugas', PetugasController::class)
+        ->parameters(['petugas' => 'petugas'])
+        ->except(['create', 'show', 'edit']);
 });
 
 // Modul Role Produksi

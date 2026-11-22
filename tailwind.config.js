@@ -15,6 +15,14 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                mint: {
+                    surface: '#F6FBF9',
+                    soft: '#CCFBF1',
+                    primary: '#0D9488',
+                    dark: '#134E4A',
+                },
+            },
         },
     },
 
