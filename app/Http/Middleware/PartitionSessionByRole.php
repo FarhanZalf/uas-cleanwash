@@ -17,6 +17,8 @@ class PartitionSessionByRole
         $cookieName = 'cleanwash_session';
 
         $path = strtolower($request->path());
+        $referer = strtolower((string) $request->header('referer', ''));
+        $roleInput = strtolower((string) ($request->input('role') ?: $request->query('role') ?: ''));
 
         if (str_starts_with($path, 'kasir') || str_contains($path, 'demo-login/kasir') || str_contains($path, 'switch-role/kasir')) {
             $cookieName = 'cleanwash_kasir_session';
@@ -24,10 +26,15 @@ class PartitionSessionByRole
             $cookieName = 'cleanwash_produksi_session';
         } elseif (str_starts_with($path, 'antar') || str_contains($path, 'demo-login/antar') || str_contains($path, 'switch-role/antar')) {
             $cookieName = 'cleanwash_antar_session';
-        } elseif ($request->has('role')) {
-            $role = strtolower((string) $request->input('role'));
-            if (in_array($role, ['kasir', 'produksi', 'antar'], true)) {
-                $cookieName = 'cleanwash_' . $role . '_session';
+        } elseif (in_array($roleInput, ['kasir', 'produksi', 'antar'], true)) {
+            $cookieName = 'cleanwash_' . $roleInput . '_session';
+        } elseif ($path === 'logout') {
+            if (str_contains($referer, '/kasir')) {
+                $cookieName = 'cleanwash_kasir_session';
+            } elseif (str_contains($referer, '/produksi')) {
+                $cookieName = 'cleanwash_produksi_session';
+            } elseif (str_contains($referer, '/antar')) {
+                $cookieName = 'cleanwash_antar_session';
             }
         }
 

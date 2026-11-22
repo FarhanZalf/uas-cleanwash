@@ -33,7 +33,7 @@ Route::match(['get', 'post'], '/demo-login/{peran}', [RoleSwitcherController::cl
     ->name('demo-login');
 
 // Modul Role Kasir & Admin
-Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
+Route::middleware(['role:Kasir'])->prefix('kasir')->name('kasir.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'kasir'])->name('dashboard');
 
     // Transaksi Laundry Masuk & Cetak Nota
@@ -71,14 +71,14 @@ Route::middleware(['auth', 'role:Kasir'])->prefix('kasir')->name('kasir.')->grou
 });
 
 // Modul Role Produksi
-Route::middleware(['auth', 'role:Produksi'])->prefix('produksi')->name('produksi.')->group(function () {
+Route::middleware(['role:Produksi'])->prefix('produksi')->name('produksi.')->group(function () {
     Route::get('/dashboard', [ProduksiController::class, 'index'])->name('dashboard');
     Route::post('/transaksi/{transaksi}/update-tahap', [ProduksiController::class, 'updateTahap'])->name('update-tahap');
     Route::post('/transaksi/{transaksi}/lapor-kerusakan', [ProduksiController::class, 'laporKerusakan'])->name('lapor-kerusakan');
 });
 
 // Modul Role Antar (Kurir)
-Route::middleware(['auth', 'role:Antar'])->prefix('antar')->name('antar.')->group(function () {
+Route::middleware(['role:Antar'])->prefix('antar')->name('antar.')->group(function () {
     Route::get('/dashboard', [AntarController::class, 'index'])->name('dashboard');
     Route::post('/detail-pengantaran/{detailPengantaran}/update-status', [AntarController::class, 'updateStatus'])->name('update-status');
 });

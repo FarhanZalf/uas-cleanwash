@@ -210,6 +210,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             <Link
                                 method="post"
                                 href={route('logout')}
+                                data={{ role: user?.peran }}
                                 as="button"
                                 className="w-full flex items-center justify-center gap-2 py-2 px-3 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition cursor-pointer"
                             >
@@ -311,6 +312,7 @@ export default function AuthenticatedLayout({ header, children }) {
                                 <Link
                                     method="post"
                                     href={route('logout')}
+                                    data={{ role: user?.peran }}
                                     as="button"
                                     className="p-1.5 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer"
                                 >

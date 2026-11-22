@@ -56,6 +56,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        $response = redirect()->route('login');
+
+        // Bersihkan seluruh cookie sesi CleanWash agar tidak ada sisa auth
+        $response->withCookie(cookie()->forget('cleanwash_session'));
+        $response->withCookie(cookie()->forget('cleanwash_kasir_session'));
+        $response->withCookie(cookie()->forget('cleanwash_produksi_session'));
+        $response->withCookie(cookie()->forget('cleanwash_antar_session'));
+
+        return $response;
     }
 }
