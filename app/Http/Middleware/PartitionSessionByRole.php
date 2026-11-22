@@ -16,11 +16,13 @@ class PartitionSessionByRole
     {
         $cookieName = 'cleanwash_session';
 
-        if ($request->is('kasir*')) {
+        $path = strtolower($request->path());
+
+        if (str_starts_with($path, 'kasir') || str_contains($path, 'demo-login/kasir') || str_contains($path, 'switch-role/kasir')) {
             $cookieName = 'cleanwash_kasir_session';
-        } elseif ($request->is('produksi*')) {
+        } elseif (str_starts_with($path, 'produksi') || str_contains($path, 'demo-login/produksi') || str_contains($path, 'switch-role/produksi')) {
             $cookieName = 'cleanwash_produksi_session';
-        } elseif ($request->is('antar*')) {
+        } elseif (str_starts_with($path, 'antar') || str_contains($path, 'demo-login/antar') || str_contains($path, 'switch-role/antar')) {
             $cookieName = 'cleanwash_antar_session';
         } elseif ($request->has('role')) {
             $role = strtolower((string) $request->input('role'));
