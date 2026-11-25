@@ -545,7 +545,7 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
                                         onClick={() => formPelunasan.setData('jenis_aksi', 'tempo')}
                                         className={`min-h-[38px] rounded-lg border px-3 font-bold transition cursor-pointer ${
                                             formPelunasan.data.jenis_aksi === 'tempo'
-                                                ? 'border-purple-600 bg-purple-50 text-purple-800'
+                                                ? 'border-[#0D9488] bg-[#CCFBF1] text-[#134E4A]'
                                                 : 'border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed'
                                         }`}
                                     >

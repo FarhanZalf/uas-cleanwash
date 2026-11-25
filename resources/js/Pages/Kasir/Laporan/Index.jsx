@@ -1,3 +1,4 @@
+import { IconPrinter } from '@/Components/LineIcons';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah, formatTanggal, formatTanggalWaktu } from '@/utils/format';
 import { Head, Link, router } from '@inertiajs/react';
@@ -40,9 +41,10 @@ export default function LaporanIndex({ ringkasanKeuangan, bukuPiutang, operasion
                         <button
                             type="button"
                             onClick={handlePrint}
-                            className="inline-flex min-h-[40px] items-center gap-1.5 rounded-lg border border-[#0D9488] bg-teal-50 px-3.5 text-xs font-bold text-[#0D9488] hover:bg-teal-100 transition cursor-pointer"
+                            className="inline-flex min-h-[42px] items-center gap-2 rounded-lg border border-teal-200 bg-white px-3.5 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                         >
-                            <span>🖨️</span> Cetak Laporan (PDF)
+                            <IconPrinter className="h-4 w-4 text-[#0D9488]" />
+                            <span>Cetak Laporan (PDF)</span>
                         </button>
                     </div>
                 </div>
@@ -177,7 +179,7 @@ export default function LaporanIndex({ ringkasanKeuangan, bukuPiutang, operasion
                                             </td>
                                             <td className="px-5 py-3">
                                                 <div className="font-bold text-slate-900">{nota.pelanggan?.nama}</div>
-                                                <div className="text-slate-500 text-[11px]">📞 {nota.pelanggan?.no_telepon}</div>
+                                                <div className="text-slate-600 text-[11px]">{nota.pelanggan?.no_telepon}</div>
                                             </td>
                                             <td className="px-5 py-3 text-slate-600">
                                                 {formatTanggal(nota.tanggal_terima)}
@@ -191,7 +193,7 @@ export default function LaporanIndex({ ringkasanKeuangan, bukuPiutang, operasion
                                             <td className="px-5 py-3 text-center">
                                                 <span className={`inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
                                                     nota.status_bayar === 'Tempo'
-                                                        ? 'bg-purple-100 text-purple-800'
+                                                        ? 'bg-rose-100 text-rose-800'
                                                         : 'bg-amber-100 text-amber-900'
                                                 }`}>
                                                     {nota.status_bayar}

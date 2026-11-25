@@ -203,13 +203,13 @@ export default function VoucherIndex({ vouchers, filters, stats }) {
                                                         </span>
                                                     ) : (
                                                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#CCFBF1] text-[#134E4A] border border-teal-200">
-                                                            ✓ Tersedia
+                                                            Tersedia
                                                         </span>
                                                     )}
                                                 </td>
                                                 <td className="px-5 py-3.5 font-mono text-xs">
                                                     {item.transaksi_laundry?.no_nota ? (
-                                                        <span className="font-bold text-blue-600">
+                                                        <span className="font-bold text-[#134E4A]">
                                                             {item.transaksi_laundry.no_nota}
                                                         </span>
                                                     ) : (

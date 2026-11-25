@@ -1,6 +1,7 @@
 import Checkbox from '@/Components/Checkbox';
 import InputError from '@/Components/InputError';
 import InputLabel from '@/Components/InputLabel';
+import { IconReceipt, IconTruck, IconWasher } from '@/Components/LineIcons';
 import PrimaryButton from '@/Components/PrimaryButton';
 import TextInput from '@/Components/TextInput';
 import GuestLayout from '@/Layouts/GuestLayout';
@@ -21,27 +22,19 @@ export default function Login({ status }) {
         });
     };
 
-    const fillAccount = (email, password) => {
-        setData((prev) => ({
-            ...prev,
-            email,
-            password,
-        }));
-    };
-
     return (
         <GuestLayout>
-            <Head title="Login Petugas" />
+            <Head title="Masuk Petugas" />
 
-            <div className="mb-5">
-                <h2 className="text-lg font-bold text-slate-800">Login Petugas Gerai</h2>
-                <p className="text-xs text-slate-500 mt-0.5">
-                    Masukkan akun internal untuk mengakses modul Kasir, Produksi, atau Antar.
+            <div className="mb-5 border-b border-teal-100 pb-4">
+                <h2 className="text-base font-bold text-[#134E4A]">Masuk Petugas Gerai</h2>
+                <p className="mt-0.5 text-xs text-slate-600">
+                    Gunakan akun internal untuk membuka modul Kasir, Produksi, atau Kurir Antar.
                 </p>
             </div>
 
             {status && (
-                <div className="mb-4 text-xs font-semibold text-emerald-700 bg-emerald-50 p-3 rounded-xl border border-emerald-200">
+                <div className="mb-4 rounded-lg border border-teal-200 bg-[#CCFBF1]/60 p-3 text-xs font-semibold text-[#134E4A]">
                     {status}
                 </div>
             )}
@@ -54,10 +47,10 @@ export default function Login({ status }) {
                         type="email"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full rounded-xl border-slate-300"
+                        className="mt-1 block w-full text-sm"
                         autoComplete="username"
                         isFocused={true}
-                        placeholder="contoh: kasir@cleanwash.local"
+                        placeholder="kasir@cleanwash.local"
                         onChange={(e) => setData('email', e.target.value)}
                     />
                     <InputError message={errors.email} className="mt-1.5" />
@@ -70,56 +63,57 @@ export default function Login({ status }) {
                         type="password"
                         name="password"
                         value={data.password}
-                        className="mt-1 block w-full rounded-xl border-slate-300"
+                        className="mt-1 block w-full text-sm"
                         autoComplete="current-password"
-                        placeholder="••••••••"
+                        placeholder="Masukkan kata sandi"
                         onChange={(e) => setData('password', e.target.value)}
                     />
                     <InputError message={errors.password} className="mt-1.5" />
                 </div>
 
                 <div className="flex items-center justify-between pt-1">
-                    <label className="flex items-center cursor-pointer">
+                    <label htmlFor="remember-me" className="flex min-h-[44px] items-center">
                         <Checkbox
+                            id="remember-me"
                             name="remember"
                             checked={data.remember}
                             onChange={(e) => setData('remember', e.target.checked)}
                         />
-                        <span className="ms-2 text-xs text-slate-600">Ingat sesi saya</span>
+                        <span className="ms-2 text-xs font-medium text-slate-700">Ingat sesi saya</span>
                     </label>
 
-                    <PrimaryButton
-                        className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-bold text-xs"
-                        disabled={processing}
-                    >
+                    <PrimaryButton disabled={processing}>
                         {processing ? 'Memproses...' : 'Masuk Sistem'}
                     </PrimaryButton>
                 </div>
             </form>
 
-            {/* Tombol Demo Akun Cepat */}
-            <div className="mt-6 pt-5 border-t border-slate-100">
-                <span className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
-                    Akses Langsung 1-Klik (Demo Semua Role):
+            {/* Akses Demo 1-Klik per Peran */}
+            <div className="mt-6 border-t border-teal-100 pt-5">
+                <span className="mb-2.5 block text-xs font-bold text-[#134E4A]">
+                    Akses Demo Langsung (1 Tab 1 Peran):
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                     <a
                         href={route('demo-login', 'Kasir')}
-                        className="py-2 px-2 text-center rounded-xl bg-teal-50 hover:bg-teal-100 text-[#0D9488] text-xs font-bold border border-teal-200 transition cursor-pointer"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-teal-200 bg-[#F6FBF9] px-2 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                     >
-                        👤 Kasir
+                        <IconReceipt className="h-3.5 w-3.5 text-[#0D9488]" />
+                        <span>Kasir</span>
                     </a>
                     <a
                         href={route('demo-login', 'Produksi')}
-                        className="py-2 px-2 text-center rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-800 text-xs font-bold border border-amber-200 transition cursor-pointer"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-teal-200 bg-[#F6FBF9] px-2 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                     >
-                        ⚙️ Produksi
+                        <IconWasher className="h-3.5 w-3.5 text-[#0D9488]" />
+                        <span>Produksi</span>
                     </a>
                     <a
                         href={route('demo-login', 'Antar')}
-                        className="py-2 px-2 text-center rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-200 transition cursor-pointer"
+                        className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-lg border border-teal-200 bg-[#F6FBF9] px-2 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                     >
-                        🛵 Kurir
+                        <IconTruck className="h-3.5 w-3.5 text-[#0D9488]" />
+                        <span>Kurir</span>
                     </a>
                 </div>
             </div>

@@ -8,7 +8,7 @@ export default function PengantaranShow({ pengantaran }) {
 
     const statusBadgeClass = {
         Menunggu: 'bg-slate-100 text-slate-700 border-slate-200',
-        Diambil: 'bg-blue-100 text-blue-800 border-blue-200',
+        Diambil: 'bg-[#CCFBF1] text-[#134E4A] border-teal-200',
         DalamPerjalanan: 'bg-amber-100 text-amber-800 border-amber-200',
         Diterima: 'bg-emerald-100 text-emerald-800 border-emerald-200',
         Gagal: 'bg-rose-100 text-rose-800 border-rose-200',
@@ -46,7 +46,7 @@ export default function PengantaranShow({ pengantaran }) {
                     <div className="rounded-xl border border-teal-100 bg-white p-4">
                         <div className="text-xs font-semibold text-slate-500">Kurir Penanggung Jawab</div>
                         <div className="mt-1 font-bold text-slate-900 text-base">{kurir?.nama_petugas}</div>
-                        <div className="text-xs text-slate-500 mt-0.5">✉️ {kurir?.email || '-'}</div>
+                        <div className="text-xs text-slate-600 mt-0.5">{kurir?.email || '-'}</div>
                     </div>
 
                     <div className="rounded-xl border border-teal-100 bg-white p-4">
@@ -99,9 +99,9 @@ export default function PengantaranShow({ pengantaran }) {
                                             </td>
                                             <td className="px-5 py-3.5">
                                                 <div className="font-bold text-slate-900">{plg?.nama}</div>
-                                                <div className="text-slate-500 mt-0.5">📞 {plg?.no_telepon}</div>
+                                                <div className="text-slate-600 mt-0.5">{plg?.no_telepon}</div>
                                                 <div className="text-slate-600 text-[11px] mt-1 max-w-xs">
-                                                    📍 {plg?.alamat || 'Tidak ada alamat'}
+                                                    {plg?.alamat || 'Tidak ada alamat'}
                                                 </div>
                                             </td>
                                             <td className="px-5 py-3.5">

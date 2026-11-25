@@ -296,8 +296,8 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
                                                             </span>
                                                         </div>
                                                         <div className="font-bold text-slate-800 mt-0.5">{t.pelanggan?.nama}</div>
-                                                        <div className="text-slate-500 mt-0.5">
-                                                            📍 {t.pelanggan?.alamat || 'Alamat belum diatur'} · 📞 {t.pelanggan?.no_telepon}
+                                                        <div className="text-slate-600 mt-0.5">
+                                                            {t.pelanggan?.alamat || 'Alamat belum diatur'} · {t.pelanggan?.no_telepon}
                                                         </div>
                                                     </div>
                                                 </label>

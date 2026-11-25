@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
+import { IconWasher } from '@/Components/LineIcons';
 import Modal from '@/Components/Modal';
 import { StatusBayar, StatusProses } from '@/Components/StatusBadge';
 import { formatJumlah, formatRupiah, formatTanggalWaktu } from '@/utils/format';
@@ -376,9 +377,11 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                             })}
                         </div>
                     ) : (
-                        <div className="rounded-xl border border-teal-100 bg-white p-12 text-center">
-                            <span className="block text-3xl mb-2">🧺</span>
-                            <p className="font-bold text-slate-800">
+                        <div className="rounded-xl border border-teal-200/80 bg-white p-12 text-center">
+                            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
+                                <IconWasher className="h-5 w-5" />
+                            </div>
+                            <p className="font-bold text-[#134E4A]">
                                 {sedangMemfilter
                                     ? 'Tidak ada antrean cucian yang sesuai dengan filter.'
                                     : 'Semua antrean pengerjaan cucian telah selesai.'}

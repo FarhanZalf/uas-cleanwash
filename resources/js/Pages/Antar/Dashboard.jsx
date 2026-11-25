@@ -1,3 +1,4 @@
+import { IconCheck, IconClose, IconPhone, IconPin, IconTruck } from '@/Components/LineIcons';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah, formatTanggal } from '@/utils/format';
 import { Head, router, useForm } from '@inertiajs/react';
@@ -39,7 +40,7 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
 
     const statusBadgeClass = {
         Menunggu: 'bg-slate-100 text-slate-700 border-slate-200',
-        Diambil: 'bg-blue-100 text-blue-800 border-blue-200',
+        Diambil: 'bg-[#CCFBF1] text-[#134E4A] border-teal-200',
         DalamPerjalanan: 'bg-amber-100 text-amber-800 border-amber-200',
         Diterima: 'bg-emerald-100 text-emerald-800 border-emerald-200',
         Gagal: 'bg-rose-100 text-rose-800 border-rose-200',
@@ -193,15 +194,18 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                             </span>
                                         </div>
 
-                                        <p className="mt-2 text-xs text-slate-700 bg-[#F6FBF9] p-3 rounded-xl border border-teal-100 leading-relaxed">
-                                            📍 <span className="font-bold text-[#134E4A]">Alamat Antar:</span>{' '}
-                                            {plg?.alamat || 'Alamat tidak tertera di data pelanggan'}
+                                        <p className="mt-2 flex items-start gap-2 text-xs text-slate-700 bg-[#F6FBF9] p-3 rounded-xl border border-teal-200/80 leading-relaxed">
+                                            <IconPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0D9488]" />
+                                            <span>
+                                                <span className="font-bold text-[#134E4A]">Alamat Antar:</span>{' '}
+                                                {plg?.alamat || 'Alamat tidak tertera di data pelanggan'}
+                                            </span>
                                         </p>
                                     </div>
 
                                     {/* Rincian Pakaian Singkat */}
-                                    <div className="text-xs text-slate-500">
-                                        <span className="font-semibold text-slate-700">Paket:</span>{' '}
+                                    <div className="text-xs text-slate-600">
+                                        <span className="font-semibold text-slate-800">Paket:</span>{' '}
                                         {itemsPakaian.map((it) => `${it.jenis_layanan?.nama_layanan} (${it.berat_atau_jumlah})`).join(', ') || 'Cucian selesai'}
                                     </div>
 
@@ -224,9 +228,10 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                             href={waLink}
                                             target="_blank"
                                             rel="noreferrer"
-                                            className="inline-flex min-h-[42px] items-center justify-center rounded-xl bg-emerald-600 px-3 text-xs font-bold text-white hover:bg-emerald-700 transition gap-1.5 cursor-pointer"
+                                            className="inline-flex min-h-[44px] items-center justify-center rounded-xl bg-[#0D9488] px-3 text-xs font-bold text-white hover:bg-[#134E4A] transition gap-1.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                                         >
-                                            <span>💬</span> WhatsApp Pelanggan
+                                            <IconPhone className="h-3.5 w-3.5" />
+                                            <span>WhatsApp Pelanggan</span>
                                         </a>
 
                                         {plg?.alamat ? (
@@ -234,15 +239,16 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                                 href={mapsLink}
                                                 target="_blank"
                                                 rel="noreferrer"
-                                                className="inline-flex min-h-[42px] items-center justify-center rounded-xl border border-blue-300 bg-blue-50 px-3 text-xs font-bold text-blue-700 hover:bg-blue-100 transition gap-1.5 cursor-pointer"
+                                                className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-teal-200 bg-[#F6FBF9] px-3 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1] transition gap-1.5 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                                             >
-                                                <span>🗺️</span> Buka Google Maps
+                                                <IconPin className="h-3.5 w-3.5 text-[#0D9488]" />
+                                                <span>Buka Google Maps</span>
                                             </a>
                                         ) : (
                                             <button
                                                 type="button"
                                                 disabled
-                                                className="inline-flex min-h-[42px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-400 cursor-not-allowed"
+                                                className="inline-flex min-h-[44px] items-center justify-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-400 cursor-not-allowed"
                                             >
                                                 Alamat Tidak Ada
                                             </button>
@@ -255,9 +261,9 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                             <button
                                                 type="button"
                                                 onClick={() => handleUpdateStatus(item.id, 'Diambil')}
-                                                className="w-full min-h-[44px] rounded-xl bg-blue-600 px-4 text-xs font-bold text-white hover:bg-blue-700 transition cursor-pointer"
+                                                className="w-full min-h-[44px] rounded-xl bg-[#134E4A] px-4 text-xs font-bold text-white hover:bg-[#0f3b38] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                                             >
-                                                📦 Ambil Paket dari Laundry (Diambil)
+                                                Ambil Paket dari Laundry (Diambil)
                                             </button>
                                         )}
 
@@ -265,9 +271,9 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                             <button
                                                 type="button"
                                                 onClick={() => handleUpdateStatus(item.id, 'DalamPerjalanan')}
-                                                className="w-full min-h-[44px] rounded-xl bg-amber-600 px-4 text-xs font-bold text-white hover:bg-amber-700 transition cursor-pointer"
+                                                className="w-full min-h-[44px] rounded-xl bg-amber-600 px-4 text-xs font-bold text-white hover:bg-amber-700 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600"
                                             >
-                                                🛵 Mulai Pengantaran (Dalam Perjalanan)
+                                                Mulai Pengantaran (Dalam Perjalanan)
                                             </button>
                                         )}
 
@@ -276,9 +282,10 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                                 <button
                                                     type="button"
                                                     onClick={() => handleUpdateStatus(item.id, 'Diterima')}
-                                                    className="min-h-[44px] rounded-xl bg-emerald-600 px-4 text-xs font-bold text-white hover:bg-emerald-700 transition cursor-pointer"
+                                                    className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-[#0D9488] px-4 text-xs font-bold text-white hover:bg-[#134E4A] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                                                 >
-                                                    ✓ Tandai Diterima Pelanggan
+                                                    <IconCheck className="h-3.5 w-3.5" />
+                                                    <span>Tandai Diterima</span>
                                                 </button>
                                                 <button
                                                     type="button"
@@ -286,9 +293,10 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                                         setSelectedItemGagal(item);
                                                         formGagal.setData('alasan_gagal', 'Rumah kosong / tidak ada orang');
                                                     }}
-                                                    className="min-h-[44px] rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-bold text-rose-700 hover:bg-rose-100 transition cursor-pointer"
+                                                    className="inline-flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-rose-200 bg-rose-50 px-4 text-xs font-bold text-rose-700 hover:bg-rose-100 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-500"
                                                 >
-                                                    ✕ Lapor Gagal Antar
+                                                    <IconClose className="h-3.5 w-3.5" />
+                                                    <span>Lapor Gagal Antar</span>
                                                 </button>
                                             </div>
                                         )}
@@ -299,13 +307,13 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                                                 onClick={() => handleUpdateStatus(item.id, 'DalamPerjalanan')}
                                                 className="w-full min-h-[44px] rounded-xl border border-amber-300 bg-amber-50 px-4 text-xs font-bold text-amber-800 hover:bg-amber-100 transition cursor-pointer"
                                             >
-                                                🔄 Antar Kembali Sekarang
+                                                Antar Kembali Sekarang
                                             </button>
                                         )}
 
                                         {item.status_antar === 'Diterima' && (
-                                            <div className="text-center py-1 text-xs font-bold text-emerald-700 bg-emerald-50/70 rounded-xl">
-                                                ✓ Paket telah berhasil diserahkan ke pelanggan
+                                            <div className="text-center py-2 text-xs font-bold text-[#134E4A] bg-[#CCFBF1]/70 border border-teal-200 rounded-xl">
+                                                Paket telah berhasil diserahkan ke pelanggan
                                             </div>
                                         )}
                                     </div>
@@ -313,9 +321,11 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                             );
                         })
                     ) : (
-                        <div className="rounded-2xl border border-slate-200 bg-white p-10 text-center text-slate-400">
-                            <span className="text-4xl block mb-2">🛵</span>
-                            <div className="font-bold text-slate-700 text-sm">Tidak ada tugas pengantaran</div>
+                        <div className="rounded-2xl border border-teal-200/80 bg-white p-10 text-center text-slate-600">
+                            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
+                                <IconTruck className="h-5 w-5" />
+                            </div>
+                            <div className="font-bold text-[#134E4A] text-sm">Tidak ada tugas pengantaran</div>
                             <p className="text-xs text-slate-400 mt-1">
                                 Belum ada jadwal paket cucian yang perlu diantar pada kategori ini.
                             </p>

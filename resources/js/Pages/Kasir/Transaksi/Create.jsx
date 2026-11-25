@@ -187,47 +187,52 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
 
             <form
                 onSubmit={simpanNota}
-                className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_340px] lg:px-8"
+                className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8"
                 noValidate
             >
                 <div className="space-y-6">
                     {/* Pelanggan */}
-                    <section aria-labelledby="judul-pelanggan" className="rounded-xl border border-teal-100 bg-white p-4 sm:p-5">
-                        <div className="flex items-center justify-between gap-3">
-                            <h2 id="judul-pelanggan" className="text-base font-bold text-[#134E4A]">
-                                1. Pelanggan
-                            </h2>
+                    <section aria-labelledby="judul-pelanggan" className="rounded-xl border border-teal-200/80 bg-white p-5">
+                        <div className="flex items-center justify-between gap-3 border-b border-teal-100 pb-3.5">
+                            <div>
+                                <h2 id="judul-pelanggan" className="text-base font-bold text-[#134E4A]">
+                                    1. Pemilih Pelanggan
+                                </h2>
+                                <p className="text-xs text-slate-600 mt-0.5">
+                                    Cari pelanggan terdaftar atau daftarkan pelanggan baru di tempat.
+                                </p>
+                            </div>
                             <button
                                 type="button"
                                 onClick={bukaModalBaru}
-                                className={`min-h-[44px] rounded-lg border border-[#0D9488] px-3 text-sm font-bold text-[#0D9488] transition hover:bg-teal-50 active:bg-teal-100 ${kelasFokus}`}
+                                className={`min-h-[44px] rounded-lg border border-[#0D9488] bg-[#F6FBF9] px-3.5 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] ${kelasFokus}`}
                             >
-                                Pelanggan baru
+                                + Pelanggan Baru
                             </button>
                         </div>
 
                         {pelangganTerpilih ? (
-                            <div className="mt-4 flex flex-col gap-3 rounded-lg border border-teal-200 bg-[#F6FBF9] p-4 sm:flex-row sm:items-start sm:justify-between">
+                            <div className="mt-4 flex flex-col gap-3 rounded-lg border border-teal-300 bg-[#CCFBF1]/45 p-4 sm:flex-row sm:items-start sm:justify-between">
                                 <div className="min-w-0">
-                                    <div className="font-bold text-slate-900">{pelangganTerpilih.nama}</div>
-                                    <div className="text-sm text-slate-700">
-                                        <span className="font-mono">{pelangganTerpilih.kode_pelanggan}</span> · {pelangganTerpilih.no_telepon}
+                                    <div className="font-bold text-[#134E4A]">{pelangganTerpilih.nama}</div>
+                                    <div className="text-sm text-slate-700 mt-0.5">
+                                        <span className="font-mono font-semibold text-[#134E4A]">{pelangganTerpilih.kode_pelanggan}</span> · {pelangganTerpilih.no_telepon}
                                     </div>
                                     {pelangganTerpilih.alamat && (
-                                        <div className="mt-1 break-words text-sm text-slate-600">{pelangganTerpilih.alamat}</div>
+                                        <div className="mt-1 break-words text-xs text-slate-700">{pelangganTerpilih.alamat}</div>
                                     )}
-                                    <div className="mt-2 text-xs font-semibold text-slate-700">
+                                    <div className="mt-2 inline-flex items-center rounded-md border border-teal-300 bg-white px-2.5 py-0.5 text-xs font-bold text-[#134E4A]">
                                         {pelangganTerpilih.hak_bayar_belakangan
-                                            ? 'Boleh bayar tempo'
-                                            : 'Wajib lunas sebelum cucian diserahkan'}
+                                            ? 'Fasilitas Bayar Tempo Aktif'
+                                            : 'Pembayaran Tunai / Lunas Saat Ambil'}
                                     </div>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => form.setData('pelanggan_id', '')}
-                                    className={`min-h-[44px] shrink-0 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 active:bg-slate-100 ${kelasFokus}`}
+                                    className={`min-h-[44px] shrink-0 rounded-lg border border-teal-200 bg-white px-3 text-xs font-bold text-[#134E4A] hover:bg-[#F6FBF9] ${kelasFokus}`}
                                 >
-                                    Ganti pelanggan
+                                    Ganti Pelanggan
                                 </button>
                             </div>
                         ) : (
@@ -480,8 +485,8 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                                                     tempoTerkunci
                                                         ? 'cursor-not-allowed border-slate-200 bg-slate-50'
                                                         : aktif
-                                                          ? 'cursor-pointer border-[#0D9488] bg-[#F6FBF9]'
-                                                          : 'cursor-pointer border-slate-200 hover:border-slate-300'
+                                                          ? 'cursor-pointer border-[#0D9488] bg-[#CCFBF1]/45'
+                                                          : 'cursor-pointer border-slate-200 hover:border-teal-300 bg-white'
                                                 }`}
                                             >
                                                 <input
@@ -495,7 +500,7 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                                                     className="mt-0.5 border-slate-400 text-[#0D9488] focus:ring-[#0D9488]"
                                                 />
                                                 <span>
-                                                    <span className={`block text-sm font-semibold ${tempoTerkunci ? 'text-slate-500' : 'text-slate-800'}`}>
+                                                    <span className={`block text-sm font-bold ${tempoTerkunci ? 'text-slate-500' : 'text-[#134E4A]'}`}>
                                                         {opsi.label}
                                                     </span>
                                                     <span className="block text-xs text-slate-600">
@@ -531,22 +536,22 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                             )}
                         </div>
 
-                        <dl className="space-y-2 p-4 text-sm sm:p-5">
+                        <dl className="space-y-2.5 bg-[#F6FBF9] p-4 text-sm sm:p-5">
                             <div className="flex justify-between">
-                                <dt className="text-slate-600">Total harga</dt>
-                                <dd className="tabular-nums text-slate-900">{formatRupiah(totalHarga)}</dd>
+                                <dt className="text-slate-600">Total harga layanan</dt>
+                                <dd className="font-semibold tabular-nums text-slate-900">{formatRupiah(totalHarga)}</dd>
                             </div>
                             <div className="flex justify-between">
                                 <dt className="text-slate-600">Potongan voucher</dt>
-                                <dd className="tabular-nums text-slate-900">{potongan > 0 ? `- ${formatRupiah(potongan)}` : formatRupiah(0)}</dd>
+                                <dd className="font-semibold tabular-nums text-[#0D9488]">{potongan > 0 ? `- ${formatRupiah(potongan)}` : formatRupiah(0)}</dd>
                             </div>
                             <div className="flex justify-between">
                                 <dt className="text-slate-600">Dibayar sekarang</dt>
-                                <dd className="tabular-nums text-slate-900">{dibayar > 0 ? `- ${formatRupiah(Math.min(dibayar, tagihan))}` : formatRupiah(0)}</dd>
+                                <dd className="font-semibold tabular-nums text-slate-900">{dibayar > 0 ? `- ${formatRupiah(Math.min(dibayar, tagihan))}` : formatRupiah(0)}</dd>
                             </div>
-                            <div className="flex items-end justify-between border-t border-teal-100 pt-3">
+                            <div className="flex items-center justify-between rounded-lg border border-teal-200 bg-[#CCFBF1]/60 px-3.5 py-3 mt-2">
                                 <dt className="font-bold text-[#134E4A]">Sisa tagihan</dt>
-                                <dd className="text-2xl font-extrabold tabular-nums text-[#134E4A]" aria-live="polite">
+                                <dd className="text-xl font-extrabold tabular-nums text-[#134E4A]" aria-live="polite">
                                     {formatRupiah(sisa)}
                                 </dd>
                             </div>

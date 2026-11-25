@@ -9,9 +9,9 @@
 | :--- | :--- |
 | **Nama Produk** | **CleanWash** - Smart Laundry Management System |
 | **Versi Dokumen** | `1.1.0 (Final Aligned Specification)` |
-| **Tanggal Pembaruan** | 22 November 2026 |
+| **Tanggal Pembaruan** | 25 November 2026 |
 | **Target Pengguna** | Bisnis Laundry Kiloan & Satuan Modern (Skala UMKM hingga Menengah) |
-| **Status Proyek** | Fase Implementasi Aktif (Progress: ±55% - Tahap 5 Selesai) |
+| **Status Proyek** | Implementasi MVP Selesai (Progress: 100% - Tahap 1 s.d. Tahap 10 Tuntas) |
 | **Tech Stack** | Laravel 12, React (Inertia.js 2.0), Tailwind CSS, MySQL 8.0, Docker |
 
 CleanWash adalah aplikasi web operasional terpadu yang dirancang khusus untuk mendigitalkan seluruh siklus bisnis jasa binatu (laundry). Sistem ini mengintegrasikan loket kasir, antrean fisik lantai produksi cuci/setrika, hingga manajemen pengantaran kurir berbasis perangkat bergerak (*mobile*), dengan penekanan pada transparansi tagihan, pencegahan kehilangan/kerusakan pakaian, dan pengendalian piutang pelanggan.
@@ -164,28 +164,28 @@ flowchart LR
 * CRUD Voucher Promo (`nomor_voucher`, `nilai_potongan`, `masa_berlaku`, `status_terpakai`).
 * CRUD Akun Petugas dengan proteksi *anti-self-deletion*.
 
-### Tahap 6: Transaksi Laundry Masuk & Cetak Nota Kasir (Status: ⏳ Tahap Berikutnya)
+### Tahap 6: Transaksi Laundry Masuk & Cetak Nota Kasir (Status: Selesai)
 * Pemilihan pelanggan terdaftar atau pendaftaran pelanggan baru secara cepat (*Quick-Create Modal*) langsung dari halaman input transaksi.
 * Input multi-item pakaian (`detail_pakaian`) dengan penguncian `harga_saat_transaksi` dan perhitungan subtotal otomatis.
 * Penerapan kode voucher promo sekali pakai (`status_terpakai = false` & `masa_berlaku >= hari ini`).
 * Pencatatan pembayaran awal (`UangMuka` / `Pelunasan`) ke tabel `pembayaran` serta pembaruan `status_bayar` (`Belum`, `DP`, `Lunas`, atau `Tempo`).
 * **Dual Format Cetak Nota:** Mendukung mode cetak **Struk Thermal 80mm** yang ringkas dan **Invoice A5** yang detail (dapat dipilih saat cetak browser/PDF).
 
-### Tahap 7: Papan Pengerjaan & Antrean Produksi (Status: ⏳ Pending)
+### Tahap 7: Papan Pengerjaan & Antrean Produksi (Status: Selesai)
 * Tampilan daftar antrean cucian `Aktif` berdasarkan prioritas (`Express` vs `Reguler`) beserta rincian `daftar_pakaian` dan `catatan_khusus`.
 * Pembaruan `status_proses_terkini` secara berurutan mengikuti JSON `tahapan_proses` dan pencatatan otomatis ke `riwayat_status_proses`.
 * Formulir pelaporan kerusakan/kehilangan pakaian (`laporan_kerusakan`) yang langsung menambah `total_kompensasi` dan memotong `sisa_tagihan`.
 
-### Tahap 8: Penyesuaian, Pembatalan & Pelunasan Kasir (Status: ⏳ Pending)
+### Tahap 8: Penyesuaian, Pembatalan & Pelunasan Kasir (Status: Selesai)
 * **Timbang Ulang / Ubah Layanan:** Memperbarui `berat_atau_jumlah` atau layanan selama tahap produksi masih memungkinkan, lalu menghitung ulang `total_harga` dan `sisa_tagihan`.
 * **Pembatalan Proporsional:** Membatalkan transaksi dengan kalkulasi biaya proporsional otomatis (`Diterima` 0%, `Dicuci` 50%, `Dikeringkan` 75%, `Disetrika`/`Selesai` terkunci 100%).
 * **Pelunasan & Serah Terima:** Pencatatan `Pelunasan` akhir atau pengaktifan status `Tempo` (khusus pelanggan dengan `hak_bayar_belakangan = true`) hingga `status_transaksi` menjadi `Selesai`.
 
-### Tahap 9: Distribusi & Jadwal Pengantaran Kurir (Status: ⏳ Pending)
+### Tahap 9: Distribusi & Jadwal Pengantaran Kurir (Status: Selesai)
 * Kasir membuat jadwal kloter `pengantaran` untuk kurir (`Antar`) dan memilih nota-nota berstatus `Selesai` ke dalam `detail_pengantaran`.
 * **Tampilan Mobile Kurir (`Antar`):** Kartu tugas responsif HP dengan tombol update status bertahap (`Menunggu` -> `Diambil` -> `DalamPerjalanan` -> `Diterima` / `Gagal` beserta input `alasan_gagal` & `jadwal_ulang`), dilengkapi **tombol pintas langsung ke WhatsApp dan Google Maps** alamat pelanggan.
 
-### Tahap 10: Rekapitulasi Laporan Keuangan & Piutang Tempo (Status: ⏳ Pending)
+### Tahap 10: Rekapitulasi Laporan Keuangan & Piutang Tempo (Status: Selesai)
 * Rekap laporan transaksi dan omzet pembayaran masuk (harian/periode).
 * Daftar pemantauan piutang untuk transaksi berstatus `Tempo` / belum lunas beserta fitur pelunasan piutang.
 * Pengujian menyeluruh (*end-to-end testing*) siap demo UAS.

@@ -26,6 +26,7 @@ export default defineConfig({
                 '**/node_modules/**',
                 '**/.git/**',
                 '**/storage/**',
+                '**/.agents/**',
             ],
         },
     },

@@ -167,7 +167,7 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                                             <td className="px-5 py-3.5">
                                                 {item.hak_bayar_belakangan ? (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#CCFBF1] text-[#134E4A] border border-teal-200">
-                                                        ✓ Diizinkan Tempo
+                                                        Diizinkan Tempo
                                                     </span>
                                                 ) : (
                                                     <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-600 border border-slate-200">
