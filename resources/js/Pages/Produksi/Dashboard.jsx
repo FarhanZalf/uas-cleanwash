@@ -1,8 +1,8 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
 import { IconWasher } from '@/Components/LineIcons';
 import Modal from '@/Components/Modal';
-import { StatusBayar, StatusProses } from '@/Components/StatusBadge';
+import { StatusProses } from '@/Components/StatusBadge';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatJumlah, formatRupiah, formatTanggalWaktu } from '@/utils/format';
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
@@ -20,7 +20,6 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
     const [prioritas, setPrioritas] = useState(filters?.prioritas || '');
     const [memuat, setMemuat] = useState(false);
 
-    // Modal Lapor Kerusakan
     const [transaksiAktifLapor, setTransaksiAktifLapor] = useState(null);
     const formLapor = useForm({
         detail_pakaian_id: '',
@@ -58,8 +57,8 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
         });
     };
 
-    const handleUpdateTahap = (transaksiId, tahapTujuan) => {
-        if (!confirm(`Pindahkan status nota ke tahap "${tahapTujuan}"?`)) {
+    const handleUpdateTahap = (transaksiId, tahapTujuan, tahapSaatIni) => {
+        if (!tahapTujuan || tahapTujuan === tahapSaatIni) {
             return;
         }
 
@@ -105,24 +104,12 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-xl font-bold text-[#134E4A]">Papan pengerjaan produksi</h1>
-                        <p className="mt-0.5 text-sm text-slate-600">
-                            Perbarui tahapan cuci secara bertahap dan catat kompensasi jika terjadi kendala pakaian.
-                        </p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-xs font-bold text-amber-800">
-                            Peran: Tim Produksi
-                        </span>
-                    </div>
-                </div>
+                <h1 className="text-lg font-bold text-[#134E4A]">Antrean Produksi</h1>
             }
         >
-            <Head title="Papan Produksi" />
+            <Head title="Antrean Produksi" />
 
-            <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-7xl space-y-5 px-4 sm:px-6 lg:px-8">
                 {/* 5 Kartu Tahap Ringkasan */}
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
                     {TAHAP_LIST.map((t) => {
@@ -143,15 +130,14 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                                         { preserveState: true, replace: true },
                                     );
                                 }}
-                                className={`rounded-xl border p-4 text-center transition ${kelasFokus} ${
+                                className={`rounded-xl border p-3.5 text-center transition ${kelasFokus} ${
                                     aktif
-                                        ? 'border-[#0D9488] bg-[#CCFBF1]/40 shadow-xs ring-1 ring-[#0D9488]'
-                                        : 'border-teal-100 bg-white hover:border-teal-200 hover:bg-[#F6FBF9]'
+                                        ? 'border-[#0D9488] bg-[#CCFBF1]/45 ring-1 ring-[#0D9488]'
+                                        : 'border-teal-200/80 bg-white hover:bg-[#F6FBF9]'
                                 }`}
                             >
-                                <span className="block text-xs font-bold uppercase tracking-wider text-slate-500">{t}</span>
-                                <div className="mt-2 text-2xl font-black text-[#134E4A]">{countPerTahap?.[t] || 0}</div>
-                                <span className="text-[11px] text-slate-500">antrean nota</span>
+                                <span className="block text-xs font-bold text-slate-600">{t}</span>
+                                <div className="mt-1 text-2xl font-black text-[#134E4A]">{countPerTahap?.[t] || 0}</div>
                             </button>
                         );
                     })}
@@ -160,25 +146,25 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                 {/* Filter Toolbar */}
                 <form
                     onSubmit={terapkanFilter}
-                    className="flex flex-col gap-3 rounded-xl border border-teal-100 bg-white p-4 md:flex-row md:items-end"
+                    className="flex flex-col gap-3 rounded-xl border border-teal-200/80 bg-white p-4 md:flex-row md:items-end"
                 >
                     <div className="flex-1">
                         <label htmlFor="cari-produksi" className={kelasLabel}>
-                            Cari nomor nota atau pelanggan
+                            Cari Nota / Pelanggan
                         </label>
                         <input
                             id="cari-produksi"
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Contoh: CW-20261122 atau Budi"
+                            placeholder="No. nota atau nama pelanggan"
                             className={kelasInput}
                         />
                     </div>
 
                     <div className="w-full md:w-44">
                         <label htmlFor="filter-tahap" className={kelasLabel}>
-                            Tahap pengerjaan
+                            Tahap
                         </label>
                         <select
                             id="filter-tahap"
@@ -197,7 +183,7 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
 
                     <div className="w-full md:w-40">
                         <label htmlFor="filter-prioritas" className={kelasLabel}>
-                            Prioritas layanan
+                            Prioritas
                         </label>
                         <select
                             id="filter-prioritas"
@@ -205,9 +191,9 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                             onChange={(e) => setPrioritas(e.target.value)}
                             className={kelasInput}
                         >
-                            <option value="">Semua prioritas</option>
-                            <option value="Express">Hanya Express</option>
-                            <option value="Reguler">Hanya Reguler</option>
+                            <option value="">Semua</option>
+                            <option value="Express">Express</option>
+                            <option value="Reguler">Reguler</option>
                         </select>
                     </div>
 
@@ -215,15 +201,15 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                         <button
                             type="submit"
                             disabled={memuat}
-                            className={`min-h-[44px] flex-1 rounded-lg bg-[#134E4A] px-4 text-sm font-bold text-white transition hover:bg-[#0f3b38] disabled:opacity-60 md:flex-none ${kelasFokus}`}
+                            className={`min-h-[42px] flex-1 rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] disabled:opacity-60 md:flex-none ${kelasFokus}`}
                         >
-                            {memuat ? 'Memuat...' : 'Terapkan'}
+                            {memuat ? 'Memuat...' : 'Filter'}
                         </button>
                         {sedangMemfilter && (
                             <button
                                 type="button"
                                 onClick={resetFilter}
-                                className={`min-h-[44px] rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 ${kelasFokus}`}
+                                className={`min-h-[42px] rounded-lg border border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:bg-slate-50 ${kelasFokus}`}
                             >
                                 Reset
                             </button>
@@ -232,196 +218,154 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                 </form>
 
                 {/* Daftar Antrean Cucian */}
-                <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-sm font-bold text-[#134E4A]">
-                            Antrean pakaian aktif ({antreanCucian?.length || 0} nota)
-                        </h2>
-                        {prioritas === 'Express' && (
-                            <span className="text-xs font-semibold text-amber-800">Menampilkan pesanan prioritas Express</span>
-                        )}
-                    </div>
+                {antreanCucian && antreanCucian.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                        {antreanCucian.map((item) => {
+                            const nextTahap = item.tahap_berikutnya;
+                            const adaInsiden = item.laporan_kerusakan && item.laporan_kerusakan.length > 0;
+                            const tahapanList = item.tahapan_berlaku || TAHAP_LIST;
 
-                    {antreanCucian && antreanCucian.length > 0 ? (
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            {antreanCucian.map((item) => {
-                                const nextTahap = item.tahap_berikutnya;
-                                const isSelesai = item.status_proses_terkini === 'Selesai';
-                                const adaInsiden = item.laporan_kerusakan && item.laporan_kerusakan.length > 0;
-
-                                return (
-                                    <article
-                                        key={item.id}
-                                        aria-label={`Nota ${item.no_nota}`}
-                                        className={`flex flex-col justify-between rounded-xl border bg-white p-5 shadow-xs transition hover:border-teal-300 ${
-                                            item.is_express
-                                                ? 'border-amber-300 ring-1 ring-amber-200'
-                                                : 'border-teal-100'
-                                        }`}
-                                    >
-                                        <div>
-                                            {/* Header Kartu */}
-                                            <div className="flex items-start justify-between gap-2 border-b border-slate-100 pb-3">
-                                                <div>
-                                                    <span className="font-mono text-sm font-black text-[#134E4A]">
-                                                        {item.no_nota}
-                                                    </span>
-                                                    <div className="text-xs font-medium text-slate-800">{item.pelanggan?.nama}</div>
-                                                </div>
-
-                                                <div className="flex flex-col items-end gap-1">
-                                                    {item.is_express && (
-                                                        <span className="rounded-md border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-black uppercase text-amber-900">
-                                                            PRIORITAS EXPRESS
-                                                        </span>
-                                                    )}
-                                                    <StatusProses status={item.status_proses_terkini} />
-                                                </div>
-                                            </div>
-
-                                            {/* Rincian Pakaian & Catatan */}
-                                            <div className="mt-3 space-y-2 text-xs">
-                                                <div className="space-y-1">
-                                                    {item.detail_pakaian?.map((d) => (
-                                                        <div key={d.id} className="rounded-md bg-slate-50 p-2 text-slate-700">
-                                                            <div className="font-bold text-slate-900">
-                                                                {d.jenis_layanan?.nama_layanan}
-                                                                <span className="ml-1 text-[11px] font-normal text-slate-500">
-                                                                    ({formatJumlah(d.berat_atau_jumlah, d.jenis_layanan?.satuan_hitung)})
-                                                                </span>
-                                                            </div>
-                                                            <div className="mt-0.5 text-slate-600">{d.daftar_pakaian}</div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-
-                                                {item.catatan_khusus && (
-                                                    <div className="rounded-md border border-amber-200 bg-amber-50/70 p-2 text-amber-900">
-                                                        <span className="font-bold">Catatan Kasir:</span> {item.catatan_khusus}
-                                                    </div>
-                                                )}
-
-                                                {adaInsiden && (
-                                                    <div className="rounded-md border border-rose-200 bg-rose-50/60 p-2 text-rose-900">
-                                                        <div className="font-bold">Kendala Tercatat ({item.laporan_kerusakan.length}):</div>
-                                                        <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
-                                                            {item.laporan_kerusakan.map((l) => (
-                                                                <li key={l.id}>
-                                                                    {l.jenis_insiden}: {l.jenis_pakaian} (Kompensasi: {formatRupiah(l.nilai_kompensasi)})
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Stepper Tahapan Dinamis */}
-                                            <div className="mt-4 border-t border-slate-100 pt-3">
-                                                <span className="text-[11px] font-semibold text-slate-500">Tahapan Proses:</span>
-                                                <div className="mt-1.5 flex flex-wrap gap-1">
-                                                    {item.tahapan_berlaku?.map((thp, idx) => {
-                                                        const posisiAktif = item.tahapan_berlaku.indexOf(item.status_proses_terkini);
-                                                        const selesaiLewat = idx <= posisiAktif;
-
-                                                        return (
-                                                            <span
-                                                                key={thp}
-                                                                className={`rounded px-2 py-0.5 text-[10px] font-bold ${
-                                                                    thp === item.status_proses_terkini
-                                                                        ? 'bg-[#0D9488] text-white'
-                                                                        : selesaiLewat
-                                                                          ? 'bg-teal-100 text-teal-800'
-                                                                          : 'bg-slate-100 text-slate-400'
-                                                                }`}
-                                                            >
-                                                                {thp}
-                                                            </span>
-                                                        );
-                                                    })}
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        {/* Aksi Bawah */}
-                                        <div className="mt-5 space-y-2 border-t border-slate-100 pt-3">
-                                            <div className="flex items-center justify-between text-[11px] text-slate-500">
-                                                <span>Diterima: {formatTanggalWaktu(item.tanggal_terima)}</span>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-2 pt-1">
-                                                {nextTahap ? (
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleUpdateTahap(item.id, nextTahap)}
-                                                        className={`min-h-[40px] rounded-lg bg-[#0D9488] px-3 text-xs font-bold text-white transition hover:bg-[#134E4A] active:bg-[#0f3b38] ${kelasFokus}`}
-                                                    >
-                                                        Lanjut: {nextTahap}
-                                                    </button>
-                                                ) : (
-                                                    <div className="flex min-h-[40px] items-center justify-center rounded-lg border border-teal-200 bg-teal-50 px-2 text-center text-xs font-bold text-teal-900">
-                                                        Tahap Tuntas
-                                                    </div>
-                                                )}
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() => bukaModalLapor(item)}
-                                                    className={`min-h-[40px] rounded-lg border border-rose-200 bg-rose-50 px-2 text-xs font-bold text-rose-700 transition hover:bg-rose-100 active:bg-rose-200 ${kelasFokus}`}
-                                                >
-                                                    Lapor Kerusakan
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </article>
-                                );
-                            })}
-                        </div>
-                    ) : (
-                        <div className="rounded-xl border border-teal-200/80 bg-white p-12 text-center">
-                            <div className="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
-                                <IconWasher className="h-5 w-5" />
-                            </div>
-                            <p className="font-bold text-[#134E4A]">
-                                {sedangMemfilter
-                                    ? 'Tidak ada antrean cucian yang sesuai dengan filter.'
-                                    : 'Semua antrean pengerjaan cucian telah selesai.'}
-                            </p>
-                            <p className="mt-1 text-xs text-slate-500">
-                                {sedangMemfilter
-                                    ? 'Coba ubah kata kunci pencarian atau reset filter di atas.'
-                                    : 'Pesanan baru dari kasir akan otomatis muncul di papan ini.'}
-                            </p>
-                            {sedangMemfilter && (
-                                <button
-                                    type="button"
-                                    onClick={resetFilter}
-                                    className={`mt-4 min-h-[40px] rounded-lg border border-slate-300 px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 ${kelasFokus}`}
+                            return (
+                                <article
+                                    key={item.id}
+                                    aria-label={`Nota ${item.no_nota}`}
+                                    className={`flex flex-col justify-between rounded-xl border bg-white p-5 ${
+                                        item.is_express
+                                            ? 'border-amber-300'
+                                            : 'border-teal-200/80'
+                                    }`}
                                 >
-                                    Tampilkan Semua Antrean
-                                </button>
-                            )}
+                                    <div>
+                                        <div className="flex items-start justify-between gap-2 border-b border-teal-100 pb-3">
+                                            <div>
+                                                <span className="font-mono text-sm font-black text-[#134E4A]">
+                                                    {item.no_nota}
+                                                </span>
+                                                <div className="text-xs font-semibold text-slate-700">{item.pelanggan?.nama}</div>
+                                            </div>
+
+                                            <div className="flex flex-col items-end gap-1">
+                                                {item.is_express && (
+                                                    <span className="rounded-md border border-amber-300 bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase text-amber-900">
+                                                        EXPRESS
+                                                    </span>
+                                                )}
+                                                <StatusProses status={item.status_proses_terkini} />
+                                            </div>
+                                        </div>
+
+                                        <div className="mt-3 space-y-2 text-xs">
+                                            {item.detail_pakaian?.map((d) => (
+                                                <div key={d.id} className="rounded-lg bg-[#F6FBF9] border border-teal-100 p-2.5 text-slate-700">
+                                                    <div className="font-bold text-[#134E4A]">
+                                                        {d.jenis_layanan?.nama_layanan}{' '}
+                                                        <span className="font-normal text-slate-600">
+                                                            ({formatJumlah(d.berat_atau_jumlah, d.jenis_layanan?.satuan_hitung)})
+                                                        </span>
+                                                    </div>
+                                                    <div className="mt-0.5 text-slate-600">{d.daftar_pakaian}</div>
+                                                </div>
+                                            ))}
+
+                                            {item.catatan_khusus && (
+                                                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-2 text-amber-900">
+                                                    <span className="font-bold">Catatan:</span> {item.catatan_khusus}
+                                                </div>
+                                            )}
+
+                                            {adaInsiden && (
+                                                <div className="rounded-lg border border-rose-200 bg-rose-50/60 p-2 text-rose-900">
+                                                    <div className="font-bold">Insiden ({item.laporan_kerusakan.length}):</div>
+                                                    <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
+                                                        {item.laporan_kerusakan.map((l) => (
+                                                            <li key={l.id}>
+                                                                {l.jenis_insiden}: {l.jenis_pakaian} ({formatRupiah(l.nilai_kompensasi)})
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Dropdown Ubah Status Proses & Tombol Lapor Kerusakan */}
+                                    <div className="mt-4 space-y-2.5 border-t border-teal-100 pt-3">
+                                        <div>
+                                            <label htmlFor={`status-proses-${item.id}`} className="block text-[11px] font-bold text-[#134E4A] mb-1">
+                                                Ubah Status Proses
+                                            </label>
+                                            <select
+                                                id={`status-proses-${item.id}`}
+                                                value={item.status_proses_terkini}
+                                                disabled={!nextTahap}
+                                                onChange={(e) => handleUpdateTahap(item.id, e.target.value, item.status_proses_terkini)}
+                                                className="block w-full rounded-lg border border-teal-300 bg-white px-3 py-2 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] disabled:bg-slate-50 disabled:text-slate-500"
+                                            >
+                                                {tahapanList.map((thp) => {
+                                                    const isCurrent = thp === item.status_proses_terkini;
+                                                    const isNext = thp === nextTahap;
+                                                    return (
+                                                        <option
+                                                            key={thp}
+                                                            value={thp}
+                                                            disabled={!isCurrent && !isNext}
+                                                        >
+                                                            {isCurrent
+                                                                ? `${thp} (Saat ini)`
+                                                                : isNext
+                                                                  ? `${thp}`
+                                                                  : thp}
+                                                        </option>
+                                                    );
+                                                })}
+                                            </select>
+                                        </div>
+
+                                        <div className="flex items-center justify-between gap-2 pt-1">
+                                            <span className="text-[11px] text-slate-500">
+                                                {formatTanggalWaktu(item.tanggal_terima)}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                onClick={() => bukaModalLapor(item)}
+                                                className={`min-h-[36px] rounded-lg border border-rose-200 bg-rose-50 px-3 text-xs font-bold text-rose-700 transition hover:bg-rose-100 ${kelasFokus}`}
+                                            >
+                                                Lapor Kerusakan
+                                            </button>
+                                        </div>
+                                    </div>
+                                </article>
+                            );
+                        })}
+                    </div>
+                ) : (
+                    <div className="rounded-xl border border-teal-200/80 bg-white p-10 text-center">
+                        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
+                            <IconWasher className="h-5 w-5" />
                         </div>
-                    )}
-                </div>
+                        <p className="text-sm font-bold text-[#134E4A]">
+                            {sedangMemfilter
+                                ? 'Tidak ada antrean yang cocok'
+                                : 'Antrean produksi kosong'}
+                        </p>
+                    </div>
+                )}
             </div>
 
             {/* Modal Lapor Kerusakan / Kehilangan */}
             <Modal show={Boolean(transaksiAktifLapor)} onClose={tutupModalLapor} maxWidth="lg">
                 {transaksiAktifLapor && (
                     <form onSubmit={simpanLaporanKerusakan} className="p-6" noValidate>
-                        <div className="flex items-start justify-between border-b border-slate-100 pb-3">
-                            <div>
-                                <h2 className="text-base font-bold text-[#134E4A]">Lapor kerusakan atau kehilangan pakaian</h2>
-                                <p className="text-xs text-slate-500 mt-0.5">
-                                    Nota: <span className="font-mono font-bold text-slate-800">{transaksiAktifLapor.no_nota}</span> ({transaksiAktifLapor.pelanggan?.nama})
-                                </p>
-                            </div>
+                        <div className="border-b border-teal-100 pb-3">
+                            <h2 className="text-base font-bold text-[#134E4A]">
+                                Lapor Kerusakan ({transaksiAktifLapor.no_nota})
+                            </h2>
                         </div>
 
                         <div className="mt-4 space-y-4 text-xs">
                             <div>
                                 <label htmlFor="lapor-item" className={kelasLabel}>
-                                    Pilih item layanan yang terkendala
+                                    Item Layanan
                                 </label>
                                 <select
                                     id="lapor-item"
@@ -439,7 +383,7 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                             </div>
 
                             <fieldset>
-                                <legend className={kelasLabel}>Kategori insiden</legend>
+                                <legend className={kelasLabel}>Kategori</legend>
                                 <div className="mt-2 flex gap-4">
                                     {['Rusak', 'Hilang'].map((kategori) => (
                                         <label key={kategori} className="flex cursor-pointer items-center gap-2">
@@ -460,14 +404,14 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
 
                             <div>
                                 <label htmlFor="lapor-jenis" className={kelasLabel}>
-                                    Jenis spesifik pakaian
+                                    Jenis Pakaian
                                 </label>
                                 <input
                                     id="lapor-jenis"
                                     type="text"
                                     value={formLapor.data.jenis_pakaian}
                                     onChange={(e) => formLapor.setData('jenis_pakaian', e.target.value)}
-                                    placeholder="Contoh: Kemeja Putih Lengan Panjang Uniqlo"
+                                    placeholder="Kemeja Putih"
                                     className={kelasInput}
                                 />
                                 <InputError message={formLapor.errors.jenis_pakaian} className="mt-1" />
@@ -475,14 +419,13 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
 
                             <div>
                                 <label htmlFor="lapor-keterangan" className={kelasLabel}>
-                                    Keterangan / kronologi kendala
+                                    Keterangan
                                 </label>
                                 <textarea
                                     id="lapor-keterangan"
-                                    rows={3}
+                                    rows={2}
                                     value={formLapor.data.keterangan}
                                     onChange={(e) => formLapor.setData('keterangan', e.target.value)}
-                                    placeholder="Jelaskan bagian yang rusak, robek, luntur, atau kondisi saat ditemukan..."
                                     className={kelasInput}
                                 />
                                 <InputError message={formLapor.errors.keterangan} className="mt-1" />
@@ -490,7 +433,7 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
 
                             <div>
                                 <label htmlFor="lapor-kompensasi" className={kelasLabel}>
-                                    Nilai kompensasi ganti rugi (Rp)
+                                    Nilai Kompensasi (Rp)
                                 </label>
                                 <input
                                     id="lapor-kompensasi"
@@ -503,9 +446,6 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                                     placeholder="50000"
                                     className={`${kelasInput} tabular-nums`}
                                 />
-                                <p className="mt-1 text-[11px] text-slate-500">
-                                    Nominal kompensasi ini akan otomatis memotong sisa tagihan pelanggan pada nota kasir.
-                                </p>
                                 <InputError message={formLapor.errors.nilai_kompensasi} className="mt-1" />
                             </div>
                         </div>
@@ -515,16 +455,16 @@ export default function ProduksiDashboard({ antreanCucian, countPerTahap, filter
                                 type="button"
                                 onClick={tutupModalLapor}
                                 disabled={formLapor.processing}
-                                className={`min-h-[44px] rounded-lg border border-slate-300 px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 ${kelasFokus}`}
+                                className={`min-h-[42px] rounded-lg border border-slate-300 px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 ${kelasFokus}`}
                             >
                                 Batal
                             </button>
                             <button
                                 type="submit"
                                 disabled={formLapor.processing}
-                                className={`min-h-[44px] rounded-lg bg-rose-600 px-4 text-xs font-bold text-white transition hover:bg-rose-700 disabled:opacity-60 ${kelasFokus}`}
+                                className={`min-h-[42px] rounded-lg bg-rose-600 px-4 text-xs font-bold text-white transition hover:bg-rose-700 disabled:opacity-60 ${kelasFokus}`}
                             >
-                                {formLapor.processing ? 'Menyimpan...' : 'Simpan Laporan & Kompensasi'}
+                                {formLapor.processing ? 'Menyimpan...' : 'Simpan'}
                             </button>
                         </div>
                     </form>

@@ -10,10 +10,10 @@ let urutItem = 0;
 const itemKosong = () => ({ key: ++urutItem, jenis_layanan_id: '', daftar_pakaian: '', berat_atau_jumlah: '' });
 
 const METODE_BAYAR = [
-    { value: 'Belum', label: 'Bayar saat ambil', hint: 'Belum ada uang masuk. Tagihan dilunasi saat cucian diambil.' },
-    { value: 'UangMuka', label: 'Uang muka (DP)', hint: 'Sebagian dibayar sekarang, sisanya saat ambil.' },
-    { value: 'Lunas', label: 'Lunas sekarang', hint: 'Seluruh tagihan dibayar saat nota dibuat.' },
-    { value: 'Tempo', label: 'Tempo', hint: 'Khusus pelanggan yang diizinkan bayar belakangan.' },
+    { value: 'Belum', label: 'Bayar saat ambil' },
+    { value: 'UangMuka', label: 'Uang muka (DP)' },
+    { value: 'Lunas', label: 'Lunas sekarang' },
+    { value: 'Tempo', label: 'Tempo' },
 ];
 
 const PELANGGAN_BARU_KOSONG = { nama: '', no_telepon: '', alamat: '', hak_bayar_belakangan: false };
@@ -167,18 +167,13 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-xl font-bold text-[#134E4A]">Nota baru</h1>
-                        <p className="mt-0.5 text-sm text-slate-600">
-                            Harga dikunci saat nota disimpan. Nota langsung masuk antrean produksi.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-2">
+                    <h1 className="text-lg font-bold text-[#134E4A]">Buat Nota Baru</h1>
                     <Link
                         href={route('kasir.transaksi.index')}
-                        className={`inline-flex min-h-[44px] items-center text-sm font-semibold text-[#0D9488] hover:text-[#134E4A] ${kelasFokus}`}
+                        className={`inline-flex min-h-[40px] items-center text-xs font-bold text-[#0D9488] hover:text-[#134E4A] ${kelasFokus}`}
                     >
-                        Kembali ke daftar nota
+                        Kembali
                     </Link>
                 </div>
             }
@@ -194,18 +189,13 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                     {/* Pelanggan */}
                     <section aria-labelledby="judul-pelanggan" className="rounded-xl border border-teal-200/80 bg-white p-5">
                         <div className="flex items-center justify-between gap-3 border-b border-teal-100 pb-3.5">
-                            <div>
-                                <h2 id="judul-pelanggan" className="text-base font-bold text-[#134E4A]">
-                                    1. Pemilih Pelanggan
-                                </h2>
-                                <p className="text-xs text-slate-600 mt-0.5">
-                                    Cari pelanggan terdaftar atau daftarkan pelanggan baru di tempat.
-                                </p>
-                            </div>
+                            <h2 id="judul-pelanggan" className="text-base font-bold text-[#134E4A]">
+                                1. Pelanggan
+                            </h2>
                             <button
                                 type="button"
                                 onClick={bukaModalBaru}
-                                className={`min-h-[44px] rounded-lg border border-[#0D9488] bg-[#F6FBF9] px-3.5 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] ${kelasFokus}`}
+                                className={`min-h-[40px] rounded-lg border border-[#0D9488] bg-[#F6FBF9] px-3.5 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1] ${kelasFokus}`}
                             >
                                 + Pelanggan Baru
                             </button>

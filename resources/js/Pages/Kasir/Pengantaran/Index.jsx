@@ -50,22 +50,17 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h2 className="text-xl font-bold leading-tight text-[#134E4A]">
-                            Manajemen Kloter Pengantaran Kurir
-                        </h2>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                            Atur jadwal dan penugasan paket cucian yang selesai dicuci kepada tim kurir antar.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-3">
+                    <h1 className="text-lg font-bold text-[#134E4A]">
+                        Kloter Pengantaran
+                    </h1>
 
                     <button
                         type="button"
                         onClick={() => setModalOpen(true)}
-                        className="inline-flex min-h-[42px] items-center justify-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] cursor-pointer"
+                        className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                     >
-                        + Buat Kloter Pengantaran
+                        + Buat Kloter
                     </button>
                 </div>
             }

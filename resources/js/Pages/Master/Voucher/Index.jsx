@@ -88,21 +88,16 @@ export default function VoucherIndex({ vouchers, filters, stats }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 className="text-xl font-black text-[#134E4A] tracking-tight">
-                            Master Voucher Promo Laundry
-                        </h2>
-                        <p className="text-xs text-teal-800/70 mt-0.5">
-                            Kelola kode kupon potongan harga sekali pakai dengan validasi masa berlaku.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-4">
+                    <h1 className="text-lg font-bold text-[#134E4A]">
+                        Voucher Promo
+                    </h1>
                     <button
                         type="button"
                         onClick={openCreateModal}
-                        className="inline-flex items-center justify-center px-4 py-2 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-xl transition shadow-xs"
+                        className="inline-flex min-h-[40px] items-center justify-center px-4 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-lg transition"
                     >
-                        + Buat Voucher Baru
+                        + Buat Voucher
                     </button>
                 </div>
             }

@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'kasir@cleanwash.local'],
             [
                 'kode_petugas' => 'PTG-001',
-                'nama_petugas' => 'Farhan (Kasir & Admin)',
+                'nama_petugas' => 'Kasir / Admin',
                 'password' => Hash::make('password'),
                 'peran' => 'Kasir',
             ]
@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'produksi@cleanwash.local'],
             [
                 'kode_petugas' => 'PTG-002',
-                'nama_petugas' => 'Budi (Staf Produksi)',
+                'nama_petugas' => 'Petugas Laundry',
                 'password' => Hash::make('password'),
                 'peran' => 'Produksi',
             ]
@@ -47,7 +47,7 @@ class DatabaseSeeder extends Seeder
             ['email' => 'antar@cleanwash.local'],
             [
                 'kode_petugas' => 'PTG-003',
-                'nama_petugas' => 'Doni (Petugas Antar/Kurir)',
+                'nama_petugas' => 'Kurir',
                 'password' => Hash::make('password'),
                 'peran' => 'Antar',
             ]

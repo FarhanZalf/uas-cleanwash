@@ -45,18 +45,13 @@ export default function TransaksiIndex({ transaksi, filters }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                        <h1 className="text-xl font-bold text-[#134E4A]">Transaksi laundry</h1>
-                        <p className="mt-0.5 text-sm text-slate-600">
-                            Cari nota berdasarkan nomor, nama, atau telepon pelanggan.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-3">
+                    <h1 className="text-lg font-bold text-[#134E4A]">Transaksi Laundry</h1>
                     <Link
                         href={route('kasir.transaksi.create')}
-                        className="inline-flex min-h-[44px] items-center justify-center rounded-lg bg-[#0D9488] px-4 text-sm font-bold text-white transition hover:bg-[#134E4A] active:bg-[#0f3b38] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] focus-visible:ring-offset-2"
+                        className="inline-flex min-h-[40px] items-center justify-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                     >
-                        Buat nota baru
+                        + Buat Nota Baru
                     </Link>
                 </div>
             }

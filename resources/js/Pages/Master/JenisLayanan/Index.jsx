@@ -101,38 +101,24 @@ export default function JenisLayananIndex({ layanan, availableTahapan }) {
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                    <div>
-                        <h2 className="text-xl font-black text-[#134E4A] tracking-tight">
-                            Master Jenis Layanan Laundry
-                        </h2>
-                        <p className="text-xs text-teal-800/70 mt-0.5">
-                            Atur tarif layanan, satuan hitung (Kg/Pcs), kecepatan pengerjaan, dan alur tahapan proses.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-4">
+                    <h1 className="text-lg font-bold text-[#134E4A]">
+                        Jenis Layanan
+                    </h1>
                     <button
                         type="button"
                         onClick={openCreateModal}
-                        className="inline-flex items-center justify-center px-4 py-2 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-xl transition shadow-xs"
+                        className="inline-flex min-h-[40px] items-center justify-center px-4 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-lg transition"
                     >
                         + Tambah Layanan
                     </button>
                 </div>
             }
         >
-            <Head title="Master Jenis Layanan" />
+            <Head title="Jenis Layanan" />
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-                <div className="bg-white rounded-2xl border border-teal-100 shadow-xs overflow-hidden">
-                    <div className="p-4 border-b border-teal-100 flex items-center justify-between">
-                        <div>
-                            <h3 className="font-bold text-slate-800 text-sm">Daftar Paket & Tarif Laundry</h3>
-                            <p className="text-xs text-slate-500">Harga snapshot akan dikunci otomatis pada saat nota dibuat</p>
-                        </div>
-                        <span className="text-xs font-semibold text-teal-900 bg-[#CCFBF1]/50 px-3 py-1 rounded-lg border border-teal-200/50">
-                            Total: {layanan?.length || 0} Layanan
-                        </span>
-                    </div>
+                <div className="bg-white rounded-xl border border-teal-200/80 overflow-hidden">
 
                     <div className="overflow-x-auto">
                         <table className="w-full text-left text-xs text-slate-600">

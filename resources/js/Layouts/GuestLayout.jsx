@@ -1,25 +1,78 @@
-import { IconWasher } from '@/Components/LineIcons';
+import { IconReceipt, IconTruck, IconWasher } from '@/Components/LineIcons';
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="flex min-h-screen flex-col items-center justify-center bg-[#F6FBF9] px-4 py-8 text-[#134E4A] sm:px-6">
-            <header className="mb-6 w-full max-w-md text-center">
-                <div className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
-                    <IconWasher className="h-6 w-6" />
+        <div className="min-h-screen bg-white text-[#134E4A] flex flex-col lg:grid lg:grid-cols-12">
+            {/* Panel Kiri: Full Background Hijau dengan Desain CleanWash */}
+            <aside className="bg-[#134E4A] text-white px-6 py-8 sm:px-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-teal-900">
+                <div className="flex items-center gap-3">
+                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#CCFBF1] text-[#134E4A]">
+                        <IconWasher className="h-6 w-6" />
+                    </div>
+                    <div>
+                        <span className="block text-xl font-extrabold tracking-tight text-white">
+                            CleanWash
+                        </span>
+                        <span className="block text-xs font-medium text-[#CCFBF1]">
+                            Smart Laundry System
+                        </span>
+                    </div>
                 </div>
-                <h1 className="text-2xl font-bold tracking-tight text-[#134E4A]">CleanWash</h1>
-                <p className="mt-1 text-xs text-slate-600">
-                    Sistem operasional kasir, lantai produksi, dan pengantaran laundry
-                </p>
-            </header>
 
-            <main className="w-full overflow-hidden rounded-xl border border-teal-200/80 bg-white px-6 py-6 sm:max-w-md">
-                {children}
+                <div className="my-10 lg:my-0 max-w-lg space-y-6">
+                    <div className="space-y-2">
+                        <span className="inline-block rounded-md bg-[#0D9488] px-2.5 py-1 text-xs font-bold text-white">
+                            Sistem Operasional Terpadu
+                        </span>
+                        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
+                            Manajemen Kasir, Produksi, dan Pengantaran Laundry
+                        </h1>
+                    </div>
+
+                    <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+                        <div className="flex items-center gap-3.5 rounded-xl border border-teal-800 bg-[#0f3f3c] px-4 py-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#CCFBF1] text-[#134E4A]">
+                                <IconReceipt className="h-4 w-4" />
+                            </div>
+                            <div className="text-xs">
+                                <div className="font-bold text-white">Kasir / Admin</div>
+                                <div className="text-teal-200 mt-0.5">Transaksi nota, data master, dan laporan</div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3.5 rounded-xl border border-teal-800 bg-[#0f3f3c] px-4 py-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#CCFBF1] text-[#134E4A]">
+                                <IconWasher className="h-4 w-4" />
+                            </div>
+                            <div className="text-xs">
+                                <div className="font-bold text-white">Petugas Laundry</div>
+                                <div className="text-teal-200 mt-0.5">Antrean tahapan cuci dan kompensasi</div>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3.5 rounded-xl border border-teal-800 bg-[#0f3f3c] px-4 py-3">
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#CCFBF1] text-[#134E4A]">
+                                <IconTruck className="h-4 w-4" />
+                            </div>
+                            <div className="text-xs">
+                                <div className="font-bold text-white">Kurir</div>
+                                <div className="text-teal-200 mt-0.5">Jadwal kloter dan status pengantaran</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="text-xs text-teal-200/80">
+                    CleanWash Laundry Management
+                </div>
+            </aside>
+
+            {/* Panel Kanan: Area Form Login Putih */}
+            <main className="flex-1 lg:col-span-6 xl:col-span-5 flex items-center justify-center bg-white px-6 py-10 sm:px-12">
+                <div className="w-full max-w-sm">
+                    {children}
+                </div>
             </main>
-
-            <footer className="mt-6 w-full max-w-md text-center text-xs text-slate-600">
-                CleanWash Sistem Informasi Operasional Laundry
-            </footer>
         </div>
     );
 }

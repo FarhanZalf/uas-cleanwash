@@ -27,24 +27,19 @@ export default function LaporanIndex({ ringkasanKeuangan, bukuPiutang, operasion
     return (
         <AuthenticatedLayout
             header={
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between print:hidden">
-                    <div>
-                        <h2 className="text-xl font-bold leading-tight text-[#134E4A]">
-                            Rekapitulasi Laporan Keuangan & Piutang
-                        </h2>
-                        <p className="mt-0.5 text-xs text-slate-500">
-                            Ikhtisar arus kas pembayaran, buku piutang tempo, dan volume operasional laundry.
-                        </p>
-                    </div>
+                <div className="flex items-center justify-between gap-3 print:hidden">
+                    <h1 className="text-lg font-bold text-[#134E4A]">
+                        Laporan & Piutang
+                    </h1>
 
                     <div className="flex items-center gap-2">
                         <button
                             type="button"
                             onClick={handlePrint}
-                            className="inline-flex min-h-[42px] items-center gap-2 rounded-lg border border-teal-200 bg-white px-3.5 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                            className="inline-flex min-h-[40px] items-center gap-2 rounded-lg border border-teal-200 bg-white px-3.5 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1] transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
                         >
                             <IconPrinter className="h-4 w-4 text-[#0D9488]" />
-                            <span>Cetak Laporan (PDF)</span>
+                            <span>Cetak PDF</span>
                         </button>
                     </div>
                 </div>
@@ -102,58 +97,45 @@ export default function LaporanIndex({ ringkasanKeuangan, bukuPiutang, operasion
 
                 {/* Section 1: Ringkasan Finansial Arus Kas Masuk */}
                 <div>
-                    <h3 className="text-sm font-bold text-[#134E4A] mb-3">1. Rekapitulasi Arus Kas Masuk (Omzet Masuk)</h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
                         <div className="rounded-xl border border-teal-200 bg-[#F6FBF9] p-5">
                             <div className="text-xs font-bold text-[#134E4A]">Total Penerimaan Kas</div>
                             <div className="mt-2 text-2xl font-black text-[#134E4A] tabular-nums">
                                 {formatRupiah(ringkasanKeuangan.total_pendapatan)}
                             </div>
-                            <div className="text-[11px] text-slate-500 mt-1">Uang masuk tercatat dari kasir</div>
                         </div>
 
-                        <div className="rounded-xl border border-teal-100 bg-white p-5">
-                            <div className="text-xs font-semibold text-slate-500">Penerimaan Uang Muka (DP)</div>
+                        <div className="rounded-xl border border-teal-200/80 bg-white p-5">
+                            <div className="text-xs font-semibold text-slate-600">Uang Muka (DP)</div>
                             <div className="mt-2 text-xl font-bold text-slate-800 tabular-nums">
                                 {formatRupiah(ringkasanKeuangan.total_uang_muka || 0)}
                             </div>
-                            <div className="text-[11px] text-slate-400 mt-1">Uang muka saat nota dibuat</div>
                         </div>
 
-                        <div className="rounded-xl border border-teal-100 bg-white p-5">
-                            <div className="text-xs font-semibold text-slate-500">Penerimaan Pelunasan</div>
+                        <div className="rounded-xl border border-teal-200/80 bg-white p-5">
+                            <div className="text-xs font-semibold text-slate-600">Pelunasan</div>
                             <div className="mt-2 text-xl font-bold text-teal-700 tabular-nums">
                                 {formatRupiah(ringkasanKeuangan.total_pelunasan || 0)}
                             </div>
-                            <div className="text-[11px] text-slate-400 mt-1">Pelunasan nota cucian</div>
                         </div>
 
                         <div className="rounded-xl border border-rose-200 bg-rose-50/50 p-5">
-                            <div className="text-xs font-semibold text-rose-800">Total Piutang Berjalan</div>
+                            <div className="text-xs font-semibold text-rose-800">Total Piutang</div>
                             <div className="mt-2 text-xl font-black text-rose-700 tabular-nums">
                                 {formatRupiah(bukuPiutang.total_piutang || 0)}
                             </div>
-                            <div className="text-[11px] text-rose-600 mt-1">Tagihan tempo & sisa belum lunas</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Section 2: Buku Piutang Tagihan Tempo & Belum Lunas */}
-                <div className="overflow-hidden rounded-xl border border-teal-100 bg-white shadow-sm">
-                    <div className="border-b border-teal-100 bg-[#F6FBF9] px-5 py-3.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                        <div>
-                            <h3 className="text-sm font-bold text-[#134E4A]">
-                                2. Buku Piutang Usaha (Tagihan Tempo & Belum Lunas)
-                            </h3>
-                            <p className="text-xs text-slate-500 mt-0.5">
-                                Daftar transaksi aktif yang belum diselesaikan pembayarannya oleh pelanggan.
-                            </p>
-                        </div>
-                        <div className="text-right">
-                            <div className="text-[11px] font-semibold text-slate-500">Total Piutang Tertunggak:</div>
-                            <div className="text-base font-black text-red-700 tabular-nums">
-                                {formatRupiah(bukuPiutang.total_piutang)}
-                            </div>
+                <div className="overflow-hidden rounded-xl border border-teal-200/80 bg-white">
+                    <div className="border-b border-teal-100 bg-[#F6FBF9] px-5 py-3.5 flex items-center justify-between gap-2">
+                        <h3 className="text-sm font-bold text-[#134E4A]">
+                            Buku Piutang
+                        </h3>
+                        <div className="text-sm font-black text-rose-700 tabular-nums">
+                            {formatRupiah(bukuPiutang.total_piutang)}
                         </div>
                     </div>
 
