@@ -12,8 +12,8 @@ import {
     IconUsers,
     IconWasher,
 } from '@/Components/LineIcons';
-import { Link, usePage } from '@inertiajs/react';
-import { useEffect, useState } from 'react';
+import { Link, router, usePage } from '@inertiajs/react';
+import { useEffect, useRef, useState } from 'react';
 
 const LABEL_PERAN = {
     Kasir: 'Kasir / Admin',
@@ -25,6 +25,7 @@ export default function AuthenticatedLayout({ header, children }) {
     const { auth, flash } = usePage().props;
     const user = auth.user;
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const isReloadingRef = useRef(false);
 
     const isKasir = user?.peran === 'Kasir';
     const labelPeran = LABEL_PERAN[user?.peran] || user?.peran || 'Petugas';
@@ -39,6 +40,60 @@ export default function AuthenticatedLayout({ header, children }) {
         window.addEventListener('keydown', onKeyDown);
         return () => window.removeEventListener('keydown', onKeyDown);
     }, [sidebarOpen]);
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+
+        const canSafelyReload = () => {
+            if (document.visibilityState !== 'visible') return false;
+            if (isReloadingRef.current) return false;
+            if (route().current('kasir.transaksi.create')) return false;
+            if (document.querySelector('[role="dialog"], .fixed.inset-0.z-50')) return false;
+            const activeTag = document.activeElement?.tagName;
+            if (['INPUT', 'TEXTAREA', 'SELECT'].includes(activeTag)) return false;
+            return true;
+        };
+
+        const triggerSilentReload = () => {
+            if (!canSafelyReload()) return;
+            isReloadingRef.current = true;
+            router.reload({
+                preserveScroll: true,
+                preserveState: true,
+                onFinish: () => {
+                    isReloadingRef.current = false;
+                },
+            });
+        };
+
+        let channel = null;
+        if ('BroadcastChannel' in window) {
+            channel = new BroadcastChannel('cleanwash_realtime_sync');
+            channel.onmessage = (event) => {
+                if (event.data?.type === 'SYNC') {
+                    triggerSilentReload();
+                }
+            };
+        }
+
+        const intervalId = window.setInterval(triggerSilentReload, 5000);
+
+        return () => {
+            window.clearInterval(intervalId);
+            if (channel) {
+                channel.close();
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (typeof window === 'undefined' || !('BroadcastChannel' in window)) return;
+        if (!flash?.success) return;
+
+        const channel = new BroadcastChannel('cleanwash_realtime_sync');
+        channel.postMessage({ type: 'SYNC', timestamp: Date.now() });
+        channel.close();
+    }, [flash?.success]);
 
     const menuOperasional = [
         { label: 'Dashboard', routeName: 'kasir.dashboard', Icon: IconDashboard },
@@ -198,6 +253,13 @@ export default function AuthenticatedLayout({ header, children }) {
                         </div>
 
                         <div className="flex items-center gap-2.5">
+                            <span
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-bold rounded-md border border-teal-200 bg-[#F6FBF9] text-[#0D9488]"
+                                title="Sinkronisasi otomatis lintas peran aktif"
+                            >
+                                <span className="h-2 w-2 rounded-full bg-[#0D9488]" />
+                                <span>Realtime</span>
+                            </span>
                             <span className="px-3 py-1 text-xs font-bold rounded-md border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
                                 {labelPeran}
                             </span>

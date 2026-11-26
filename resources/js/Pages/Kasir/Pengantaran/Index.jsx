@@ -1,6 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatTanggal } from '@/utils/format';
-import { Head, Link, useForm } from '@inertiajs/react';
+import { Head, Link, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
 export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiapAntar, filters }) {
@@ -15,7 +15,7 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
 
     const handleSearch = (e) => {
         e.preventDefault();
-        window.location.href = route('kasir.pengantaran.index', { search });
+        router.get(route('kasir.pengantaran.index'), { search }, { preserveState: true, preserveScroll: true });
     };
 
     const toggleNota = (id) => {
@@ -294,6 +294,14 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
                                                         <div className="text-slate-600 mt-0.5">
                                                             {t.pelanggan?.alamat || 'Alamat belum diatur'} · {t.pelanggan?.no_telepon}
                                                         </div>
+                                                        {t.detail_pengantaran?.[0]?.status_antar === 'Gagal' && (
+                                                            <div className="mt-1.5 rounded-md border border-rose-200 bg-rose-50 px-2.5 py-1 text-[11px] font-bold text-rose-800">
+                                                                Gagal Antar Sebelumnya: {t.detail_pengantaran[0].alasan_gagal || '-'}
+                                                                {t.detail_pengantaran[0].jadwal_ulang
+                                                                    ? ` · Jadwal Ulang: ${formatTanggal(t.detail_pengantaran[0].jadwal_ulang)}`
+                                                                    : ''}
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </label>
                                             );

@@ -57,8 +57,16 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
         nominal: sisaTagihan,
         metode_pembayaran: 'Tunai',
         catatan: '',
-        serahkan_cucian: transaksi.status_proses_terkini === 'Selesai',
+        serahkan_cucian: transaksi.status_proses_terkini === 'Selesai' && transaksi.status_transaksi === 'Aktif',
     });
+
+    const daftarKerusakan = items.flatMap((it) =>
+        (it.laporan_kerusakan || []).map((lk) => ({
+            ...lk,
+            nama_layanan: it.jenis_layanan?.nama_layanan || 'Layanan',
+        }))
+    );
+    const daftarPengantaran = transaksi.detail_pengantaran || [];
 
     const handleSimpanPelunasan = (e) => {
         e.preventDefault();
@@ -152,14 +160,11 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
                 </div>
 
                 {/* Bilah Aksi Cepat Kasir (Tahap 8) */}
-                {transaksi.status_transaksi === 'Aktif' && (
+                {(transaksi.status_transaksi === 'Aktif' || (transaksi.status_transaksi === 'Selesai' && sisaTagihan > 0)) && (
                     <div className="rounded-xl border border-teal-200 bg-white p-4 shadow-sm">
                         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                             <div>
                                 <h3 className="text-sm font-bold text-[#134E4A]">Panel Operasional Transaksi Kasir</h3>
-                                <p className="text-xs text-slate-500 mt-0.5">
-                                    Kelola penyesuaian timbang ulang, pembatalan pesanan berbiaya proporsional, atau pelunasan sisa tagihan.
-                                </p>
                             </div>
 
                             <div className="flex flex-wrap items-center gap-2">
@@ -173,13 +178,15 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
                                     </button>
                                 )}
 
-                                <button
-                                    type="button"
-                                    onClick={() => setModalPelunasanOpen(true)}
-                                    className="inline-flex min-h-[42px] items-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] cursor-pointer"
-                                >
-                                    {sisaTagihan > 0 ? 'Catat Pelunasan' : 'Serah Terima Cucian'}
-                                </button>
+                                {(sisaTagihan > 0 || transaksi.status_transaksi === 'Aktif') && (
+                                    <button
+                                        type="button"
+                                        onClick={() => setModalPelunasanOpen(true)}
+                                        className="inline-flex min-h-[42px] items-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] cursor-pointer"
+                                    >
+                                        {sisaTagihan > 0 ? 'Catat Pelunasan' : 'Serah Terima Cucian'}
+                                    </button>
+                                )}
 
                                 {bolehBatal && (
                                     <button
@@ -318,6 +325,75 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
                         </table>
                     </div>
                 </div>
+
+                {/* Integrasi Lintas Peran: Status Pengantaran Kurir & Laporan Kerusakan Produksi */}
+                {(daftarPengantaran.length > 0 || daftarKerusakan.length > 0) && (
+                    <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+                        {daftarPengantaran.length > 0 && (
+                            <div className="overflow-hidden rounded-xl border border-teal-100 bg-white">
+                                <div className="border-b border-teal-100 bg-[#F6FBF9] px-5 py-3">
+                                    <h2 className="text-sm font-bold text-[#134E4A]">Status Pengantaran Kurir</h2>
+                                </div>
+                                <ul className="divide-y divide-slate-100 p-4 space-y-2">
+                                    {daftarPengantaran.map((dp) => (
+                                        <li key={dp.id} className="flex items-start justify-between py-2 text-xs">
+                                            <div>
+                                                <div className="font-bold text-[#134E4A]">
+                                                    Kloter {dp.pengantaran?.kode_pengantaran || '-'}
+                                                </div>
+                                                <div className="text-slate-600 mt-0.5">
+                                                    Kurir: {dp.pengantaran?.petugas?.nama_petugas || 'Kurir'}
+                                                </div>
+                                                {dp.alasan_gagal && (
+                                                    <div className="mt-1 rounded bg-rose-50 px-2 py-1 text-[11px] font-semibold text-rose-800 border border-rose-200">
+                                                        Gagal Antar: {dp.alasan_gagal}
+                                                        {dp.jadwal_ulang ? ` (Jadwal Ulang: ${formatTanggal(dp.jadwal_ulang)})` : ''}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className="text-right">
+                                                <span className="inline-flex rounded-md border border-teal-200 bg-[#CCFBF1] px-2.5 py-0.5 text-[11px] font-bold text-[#134E4A]">
+                                                    {dp.status_antar}
+                                                </span>
+                                                {dp.waktu_antar && (
+                                                    <div className="mt-1 text-[11px] text-slate-500">
+                                                        {formatTanggalWaktu(dp.waktu_antar)}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+
+                        {daftarKerusakan.length > 0 && (
+                            <div className="overflow-hidden rounded-xl border border-rose-200 bg-white">
+                                <div className="border-b border-rose-200 bg-rose-50/70 px-5 py-3">
+                                    <h2 className="text-sm font-bold text-rose-900">Laporan Kerusakan & Kompensasi Produksi</h2>
+                                </div>
+                                <ul className="divide-y divide-slate-100 p-4 space-y-2">
+                                    {daftarKerusakan.map((lk) => (
+                                        <li key={lk.id} className="flex items-start justify-between py-2 text-xs">
+                                            <div>
+                                                <div className="font-bold text-slate-900">
+                                                    {lk.jenis_pakaian_rusak} ({lk.nama_layanan})
+                                                </div>
+                                                <div className="text-slate-600 mt-0.5">{lk.deskripsi_kerusakan}</div>
+                                                <div className="text-[11px] text-slate-500 mt-0.5">
+                                                    Dilaporkan oleh: {lk.petugas?.nama_petugas || 'Petugas Laundry'}
+                                                </div>
+                                            </div>
+                                            <span className="font-black tabular-nums text-rose-700">
+                                                - {formatRupiah(lk.nominal_kompensasi)}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {/* Riwayat Pembayaran & Riwayat Tahap Produksi */}
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
@@ -598,7 +674,7 @@ export default function TransaksiShow({ transaksi, ringkasan }) {
                                 />
                             </div>
 
-                            {transaksi.status_proses_terkini === 'Selesai' && (
+                            {transaksi.status_proses_terkini === 'Selesai' && transaksi.status_transaksi === 'Aktif' && (
                                 <div className="rounded-lg border border-teal-200 bg-[#F6FBF9] p-3">
                                     <label className="flex items-center gap-2 cursor-pointer">
                                         <input

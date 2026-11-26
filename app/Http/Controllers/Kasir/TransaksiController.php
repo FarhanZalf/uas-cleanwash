@@ -350,9 +350,9 @@ class TransaksiController extends Controller
 
     public function pelunasan(PelunasanRequest $request, TransaksiLaundry $transaksi): RedirectResponse
     {
-        if ($transaksi->status_transaksi !== 'Aktif') {
+        if ($transaksi->status_transaksi === 'Batal') {
             throw ValidationException::withMessages([
-                'jenis_aksi' => 'Pelunasan hanya dapat dilakukan pada transaksi yang masih Aktif.',
+                'jenis_aksi' => 'Pelunasan tidak dapat dilakukan pada transaksi yang sudah dibatalkan.',
             ]);
         }
 
@@ -388,7 +388,7 @@ class TransaksiController extends Controller
                 $transaksi->update(['status_bayar' => 'Tempo']);
             }
 
-            if (! empty($data['serahkan_cucian'])) {
+            if (! empty($data['serahkan_cucian']) && $transaksi->status_transaksi === 'Aktif') {
                 if ($transaksi->status_proses_terkini !== 'Selesai') {
                     throw ValidationException::withMessages([
                         'serahkan_cucian' => 'Cucian belum selesai diproses di bagian produksi.',
@@ -424,6 +424,8 @@ class TransaksiController extends Controller
             'petugas:id,kode_petugas,nama_petugas',
             'voucher',
             'detailPakaian.jenisLayanan:id,kode_layanan,nama_layanan,satuan_hitung,kecepatan',
+            'detailPakaian.laporanKerusakan.petugas:id,nama_petugas',
+            'detailPengantaran.pengantaran.petugas:id,nama_petugas',
             'pembayaran.petugas:id,nama_petugas',
             'riwayatStatusProses.petugas:id,nama_petugas',
         ]);

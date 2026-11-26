@@ -35,13 +35,10 @@ class LaporanController extends Controller
         $totalUangMuka = (float) ($pendapatanPerJenis['UangMuka'] ?? 0);
         $totalPelunasan = (float) ($pendapatanPerJenis['Pelunasan'] ?? 0);
 
-        // 2. Buku Piutang Tagihan Tempo & Belum Lunas
+        // 2. Buku Piutang Tagihan Tempo & Belum Lunas (termasuk cucian yang sudah diserahkan/diantar namun masih tempo)
         $daftarPiutang = TransaksiLaundry::query()
-            ->where('status_transaksi', 'Aktif')
-            ->where(function ($q) {
-                $q->where('status_bayar', 'Tempo')
-                    ->orWhere('sisa_tagihan', '>', 0);
-            })
+            ->where('status_transaksi', '!=', 'Batal')
+            ->where('sisa_tagihan', '>', 0)
             ->with(['pelanggan:id,kode_pelanggan,nama,no_telepon', 'petugas:id,nama_petugas'])
             ->orderByDesc('sisa_tagihan')
             ->get();

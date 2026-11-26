@@ -47,7 +47,10 @@ class PengantaranController extends Controller
             ->whereDoesntHave('detailPengantaran', function ($q) {
                 $q->whereIn('status_antar', ['Menunggu', 'Diambil', 'DalamPerjalanan']);
             })
-            ->with('pelanggan:id,kode_pelanggan,nama,no_telepon,alamat')
+            ->with([
+                'pelanggan:id,kode_pelanggan,nama,no_telepon,alamat',
+                'detailPengantaran' => fn ($q) => $q->latest('id'),
+            ])
             ->latest('id')
             ->get();
 
