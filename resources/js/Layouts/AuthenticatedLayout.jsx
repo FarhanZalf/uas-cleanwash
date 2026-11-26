@@ -1,3 +1,4 @@
+import AutopilotDemo from '@/Components/AutopilotDemo';
 import {
     IconCheck,
     IconClose,
@@ -46,6 +47,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
         const canSafelyReload = () => {
             if (document.visibilityState !== 'visible') return false;
+            if (sessionStorage.getItem('cleanwash_autopilot_active') === '1') return false;
             if (isReloadingRef.current) return false;
             if (route().current('kasir.transaksi.create')) return false;
             if (document.querySelector('[role="dialog"], .fixed.inset-0.z-50')) return false;
@@ -147,6 +149,7 @@ export default function AuthenticatedLayout({ header, children }) {
 
     return (
         <div className="min-h-screen bg-white text-slate-800 antialiased flex flex-col lg:flex-row">
+            <AutopilotDemo />
             {/* Sidebar Kiri Hijau untuk Kasir / Admin */}
             {isKasir && (
                 <>

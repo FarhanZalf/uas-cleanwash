@@ -1,8 +1,10 @@
+import AutopilotDemo, { startAutopilotDemo } from '@/Components/AutopilotDemo';
 import { IconReceipt, IconTruck, IconWasher } from '@/Components/LineIcons';
 
 export default function GuestLayout({ children }) {
     return (
         <div className="min-h-screen bg-white text-[#134E4A] flex flex-col lg:grid lg:grid-cols-12">
+            <AutopilotDemo />
             {/* Panel Kiri: Full Background Hijau dengan Desain CleanWash */}
             <aside className="bg-[#134E4A] text-white px-6 py-8 sm:px-12 lg:col-span-6 xl:col-span-7 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-teal-900">
                 <div className="flex items-center gap-3">
@@ -21,9 +23,14 @@ export default function GuestLayout({ children }) {
 
                 <div className="my-10 lg:my-0 max-w-lg space-y-6">
                     <div className="space-y-2">
-                        <span className="inline-block rounded-md bg-[#0D9488] px-2.5 py-1 text-xs font-bold text-white">
+                        <button
+                            type="button"
+                            onClick={() => startAutopilotDemo('Auth/Login')}
+                            title="Klik atau tekan Alt+D untuk menjalankan Autopilot Live Demo"
+                            className="inline-block rounded-md bg-[#0D9488] px-2.5 py-1 text-xs font-bold text-white transition hover:bg-teal-500 cursor-pointer"
+                        >
                             Sistem Operasional Terpadu
-                        </span>
+                        </button>
                         <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-snug">
                             Manajemen Kasir, Produksi, dan Pengantaran Laundry
                         </h1>
