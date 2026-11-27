@@ -1,4 +1,3 @@
-import AutopilotDemo from '@/Components/AutopilotDemo';
 import { formatJumlah, formatRupiah, formatTanggal, formatTanggalWaktu } from '@/utils/format';
 import { Head, Link } from '@inertiajs/react';
 import { useState } from 'react';
@@ -22,7 +21,6 @@ export default function TransaksiCetak({ transaksi, ringkasan, format: formatAwa
 
     return (
         <div className="min-h-screen bg-slate-100 text-slate-800 antialiased print:bg-white print:p-0">
-            <AutopilotDemo />
             <Head title={`Cetak Nota ${transaksi.no_nota}`} />
 
             {/* Top Toolbar (Disembunyikan saat dicetak browser) */}
