@@ -32,7 +32,16 @@ class TransaksiController extends Controller
         $status = $request->input('status');
 
         $transaksi = TransaksiLaundry::query()
-            ->with('pelanggan:id,kode_pelanggan,nama,no_telepon')
+            ->with([
+                'pelanggan',
+                'petugas:id,kode_petugas,nama_petugas',
+                'voucher',
+                'detailPakaian.jenisLayanan:id,kode_layanan,nama_layanan,satuan_hitung,kecepatan',
+                'detailPakaian.laporanKerusakan.petugas:id,nama_petugas',
+                'detailPengantaran.pengantaran.petugas:id,nama_petugas',
+                'pembayaran.petugas:id,nama_petugas',
+                'riwayatStatusProses.petugas:id,nama_petugas',
+            ])
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($q) use ($search) {
                     $q->where('no_nota', 'like', "%{$search}%")
@@ -297,6 +306,10 @@ class TransaksiController extends Controller
             ]);
         });
 
+        if ($request->boolean('from_modal')) {
+            return back()->with('success', 'Penyesuaian timbang ulang pakaian berhasil disimpan.');
+        }
+
         return redirect()->route('kasir.transaksi.show', $transaksi)
             ->with('success', 'Penyesuaian timbang ulang pakaian berhasil disimpan.');
     }
@@ -343,6 +356,10 @@ class TransaksiController extends Controller
                 ),
             ]);
         });
+
+        if ($request->boolean('from_modal')) {
+            return back()->with('success', 'Transaksi berhasil dibatalkan.');
+        }
 
         return redirect()->route('kasir.transaksi.show', $transaksi)
             ->with('success', 'Transaksi berhasil dibatalkan.');
@@ -412,6 +429,10 @@ class TransaksiController extends Controller
                 ]);
             }
         });
+
+        if ($request->boolean('from_modal')) {
+            return back()->with('success', 'Status pembayaran dan penyerahan cucian berhasil diperbarui.');
+        }
 
         return redirect()->route('kasir.transaksi.show', $transaksi)
             ->with('success', 'Status pembayaran dan penyerahan cucian berhasil diperbarui.');

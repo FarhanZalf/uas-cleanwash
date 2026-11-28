@@ -1,3 +1,4 @@
+import { IconSearch } from '@/Components/LineIcons';
 import Modal from '@/Components/Modal';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
@@ -119,19 +120,22 @@ export default function PetugasIndex({ petugas, filters }) {
             <Head title="Akun Petugas" />
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-                {/* Search Bar */}
+                {/* Search Bar Seragam Full-Width */}
                 <div className="bg-white p-4 rounded-xl border border-teal-200/80 flex items-center justify-between gap-3">
                     <form onSubmit={handleSearch} className="flex-1 flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari kode, peran, atau email..."
-                            className="w-full text-xs rounded-lg border-slate-300 focus:border-[#0D9488] focus:ring-[#0D9488] px-3.5 py-2"
-                        />
+                        <div className="relative flex-1">
+                            <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari kode petugas, jabatan, atau email..."
+                                className="block w-full text-xs rounded-lg border-slate-300 focus:border-[#0D9488] focus:ring-[#0D9488] pl-10 pr-3.5 py-2"
+                            />
+                        </div>
                         <button
                             type="submit"
-                            className="min-h-[38px] px-4 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-lg transition"
+                            className="min-h-[38px] px-4 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-lg transition cursor-pointer"
                         >
                             Cari
                         </button>
@@ -139,7 +143,7 @@ export default function PetugasIndex({ petugas, filters }) {
                             <button
                                 type="button"
                                 onClick={handleResetSearch}
-                                className="min-h-[38px] px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-lg transition"
+                                className="min-h-[38px] px-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg transition cursor-pointer"
                             >
                                 Reset
                             </button>
@@ -179,7 +183,7 @@ export default function PetugasIndex({ petugas, filters }) {
                                                         aria-label={`Ubah peran ${item.nama_petugas}`}
                                                         value={item.peran}
                                                         onChange={(e) => handleInlineRoleChange(item, e.target.value)}
-                                                        className="rounded-lg border border-teal-200 bg-[#F6FBF9] px-2.5 py-1.5 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
+                                                        className="min-w-[168px] rounded-lg border border-teal-200 bg-[#F6FBF9] py-1.5 pl-3 pr-9 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] cursor-pointer"
                                                     >
                                                         {PILIHAN_PERAN.map((p) => (
                                                             <option key={p.value} value={p.value}>

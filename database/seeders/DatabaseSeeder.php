@@ -111,7 +111,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Ahmad Fauzi',
                 'no_telepon' => '081234567890',
-                'alamat' => 'Jl. Kaliurang KM 5 No. 14, Sleman, Yogyakarta',
+                'alamat' => 'Jl. Kaliurang KM 5 No. 14, Sleman, Yogyakarta [Titik Maps: -7.75680, 110.38060]',
                 'hak_bayar_belakangan' => true,
             ]
         );
@@ -121,7 +121,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Siti Nurhaliza',
                 'no_telepon' => '085678901234',
-                'alamat' => 'Jl. Gejayan No. 28, Condongcatur, Depok, Sleman',
+                'alamat' => 'Jl. Gejayan No. 28, Condongcatur, Depok, Sleman [Titik Maps: -7.76760, 110.39350]',
                 'hak_bayar_belakangan' => false,
             ]
         );
@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Hendra Pratama',
                 'no_telepon' => '087812345678',
-                'alamat' => 'Perum Candi Indah Blok C-5, Kalasan, Sleman',
+                'alamat' => 'Perum Candi Indah Blok C-5, Kalasan, Sleman [Titik Maps: -7.77190, 110.46580]',
                 'hak_bayar_belakangan' => true,
             ]
         );
@@ -141,7 +141,7 @@ class DatabaseSeeder extends Seeder
             [
                 'nama' => 'Rina Wulandari',
                 'no_telepon' => '081398765432',
-                'alamat' => 'Jl. Palagan Tentara Pelajar No. 88, Ngaglik, Sleman',
+                'alamat' => 'Jl. Palagan Tentara Pelajar No. 88, Ngaglik, Sleman [Titik Maps: -7.73420, 110.37410]',
                 'hak_bayar_belakangan' => false,
             ]
         );

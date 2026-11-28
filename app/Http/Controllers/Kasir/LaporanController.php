@@ -39,7 +39,16 @@ class LaporanController extends Controller
         $daftarPiutang = TransaksiLaundry::query()
             ->where('status_transaksi', '!=', 'Batal')
             ->where('sisa_tagihan', '>', 0)
-            ->with(['pelanggan:id,kode_pelanggan,nama,no_telepon', 'petugas:id,nama_petugas'])
+            ->with([
+                'pelanggan',
+                'petugas:id,kode_petugas,nama_petugas',
+                'voucher',
+                'detailPakaian.jenisLayanan:id,kode_layanan,nama_layanan,satuan_hitung,kecepatan',
+                'detailPakaian.laporanKerusakan.petugas:id,nama_petugas',
+                'detailPengantaran.pengantaran.petugas:id,nama_petugas',
+                'pembayaran.petugas:id,nama_petugas',
+                'riwayatStatusProses.petugas:id,nama_petugas',
+            ])
             ->orderByDesc('sisa_tagihan')
             ->get();
 
@@ -47,6 +56,7 @@ class LaporanController extends Controller
 
         // 3. Rekapitulasi Operasional Cucian
         $transaksiPeriode = TransaksiLaundry::whereBetween('tanggal_terima', [$start, $end]);
+        $totalOmzet = (float) (clone $transaksiPeriode)->where('status_transaksi', '!=', 'Batal')->sum('total_harga');
         $totalNota = (clone $transaksiPeriode)->count();
         $totalNotaSelesai = (clone $transaksiPeriode)->where('status_transaksi', 'Selesai')->count();
         $totalNotaBatal = (clone $transaksiPeriode)->where('status_transaksi', 'Batal')->count();
@@ -77,6 +87,7 @@ class LaporanController extends Controller
 
         return Inertia::render('Kasir/Laporan/Index', [
             'ringkasanKeuangan' => [
+                'total_omzet' => $totalOmzet,
                 'total_pendapatan' => $totalPendapatan,
                 'total_uang_muka' => $totalUangMuka,
                 'total_pelunasan' => $totalPelunasan,

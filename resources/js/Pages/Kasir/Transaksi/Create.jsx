@@ -1,5 +1,6 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import InputError from '@/Components/InputError';
+import LocationMapPicker from '@/Components/LocationMapPicker';
 import Modal from '@/Components/Modal';
 import { formatRupiah, labelSatuan } from '@/utils/format';
 import { Head, Link, useForm } from '@inertiajs/react';
@@ -605,7 +606,7 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                             <InputError message={errorBaru.no_telepon} className="mt-1" />
                         </div>
                         <div>
-                            <label htmlFor="baru-alamat" className={kelasLabel}>Alamat (untuk pengantaran)</label>
+                            <label htmlFor="baru-alamat" className={kelasLabel}>Alamat & Titik Maps (untuk pengantaran kurir)</label>
                             <textarea
                                 id="baru-alamat"
                                 rows={2}
@@ -614,6 +615,10 @@ export default function TransaksiCreate({ pelanggan, jenisLayanan }) {
                                 className={kelasInput}
                             />
                             <InputError message={errorBaru.alamat} className="mt-1" />
+                            <LocationMapPicker
+                                value={pelangganBaru.alamat}
+                                onChange={(alamatBaru) => setPelangganBaru({ ...pelangganBaru, alamat: alamatBaru })}
+                            />
                         </div>
                         <label htmlFor="baru-tempo" className="flex cursor-pointer items-start gap-3">
                             <input

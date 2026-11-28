@@ -1,5 +1,7 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { IconPin, IconSearch } from '@/Components/LineIcons';
+import LocationMapPicker, { buildGoogleMapsUrl } from '@/Components/LocationMapPicker';
 import Modal from '@/Components/Modal';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head, router, useForm } from '@inertiajs/react';
 import { useState } from 'react';
 
@@ -103,19 +105,22 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
             <Head title="Master Pelanggan" />
 
             <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-4">
-                {/* Search Bar */}
-                <div className="bg-white p-4 rounded-2xl border border-teal-100 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                {/* Search Bar Seragam Full-Width */}
+                <div className="bg-white p-4 rounded-xl border border-teal-200/80 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <form onSubmit={handleSearch} className="flex-1 w-full flex items-center gap-2">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari berdasarkan nama, kode, atau nomor HP/WA..."
-                            className="w-full text-xs rounded-xl border-slate-200 focus:border-[#0D9488] focus:ring-[#0D9488] px-3.5 py-2"
-                        />
+                        <div className="relative flex-1">
+                            <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari berdasarkan nama, kode pelanggan, atau nomor HP/WA..."
+                                className="block w-full text-xs rounded-lg border-slate-300 focus:border-[#0D9488] focus:ring-[#0D9488] pl-10 pr-3.5 py-2"
+                            />
+                        </div>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-xl transition"
+                            className="min-h-[38px] px-4 bg-[#0D9488] hover:bg-[#134E4A] text-white text-xs font-bold rounded-lg transition cursor-pointer"
                         >
                             Cari
                         </button>
@@ -123,13 +128,13 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                             <button
                                 type="button"
                                 onClick={handleResetSearch}
-                                className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition"
+                                className="min-h-[38px] px-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 text-xs font-bold rounded-lg transition cursor-pointer"
                             >
                                 Reset
                             </button>
                         )}
                     </form>
-                    <div className="text-xs font-semibold text-teal-900 bg-[#CCFBF1]/50 px-3 py-1.5 rounded-lg border border-teal-200/50">
+                    <div className="text-xs font-bold text-[#134E4A] bg-[#CCFBF1]/60 px-3 py-2 rounded-lg border border-teal-200 shrink-0">
                         Total: {pelanggan?.total || 0} Pelanggan
                     </div>
                 </div>
@@ -156,8 +161,21 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                                             <td className="px-5 py-3.5 font-mono font-bold text-teal-700">{item.kode_pelanggan}</td>
                                             <td className="px-5 py-3.5 font-bold text-slate-800">{item.nama}</td>
                                             <td className="px-5 py-3.5 font-medium text-slate-600">{item.no_telepon}</td>
-                                            <td className="px-5 py-3.5 text-slate-500 max-w-xs truncate" title={item.alamat}>
-                                                {item.alamat || '-'}
+                                            <td className="px-5 py-3.5 text-slate-600 max-w-xs">
+                                                <div className="truncate" title={item.alamat}>
+                                                    {item.alamat || '-'}
+                                                </div>
+                                                {item.alamat && (
+                                                    <a
+                                                        href={buildGoogleMapsUrl(item.alamat)}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="mt-0.5 inline-flex items-center gap-1 text-[11px] font-bold text-[#0D9488] hover:underline"
+                                                    >
+                                                        <IconPin className="h-3 w-3" />
+                                                        <span>Lihat Titik Maps</span>
+                                                    </a>
+                                                )}
                                             </td>
                                             <td className="px-5 py-3.5">
                                                 {item.hak_bayar_belakangan ? (
@@ -233,8 +251,8 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
             </div>
 
             {/* Modal Tambah Pelanggan */}
-            <Modal show={isCreateOpen} onClose={() => setIsCreateOpen(false)} maxWidth="md">
-                <form onSubmit={submitCreate} className="p-6 space-y-4">
+            <Modal show={isCreateOpen} onClose={() => setIsCreateOpen(false)} maxWidth="lg">
+                <form onSubmit={submitCreate} className="p-6 space-y-4 max-h-[88vh] overflow-y-auto">
                     <div className="border-b border-teal-100 pb-3">
                         <h3 className="text-base font-black text-[#134E4A]">Tambah Pelanggan Baru</h3>
                         <p className="text-xs text-slate-500 mt-0.5">Lengkapi identitas pelanggan laundry.</p>
@@ -285,7 +303,7 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Lengkap</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Lengkap & Titik Maps Kurir</label>
                         <textarea
                             value={createForm.data.alamat}
                             onChange={(e) => createForm.setData('alamat', e.target.value)}
@@ -296,6 +314,10 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                         {createForm.errors.alamat && (
                             <p className="text-xs text-rose-600 mt-1">{createForm.errors.alamat}</p>
                         )}
+                        <LocationMapPicker
+                            value={createForm.data.alamat}
+                            onChange={(alamatBaru) => createForm.setData('alamat', alamatBaru)}
+                        />
                     </div>
 
                     {/* SAKLAR HAK BAYAR BELAKANGAN (TEMPO) */}
@@ -338,8 +360,8 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
             </Modal>
 
             {/* Modal Ubah Pelanggan */}
-            <Modal show={Boolean(editingItem)} onClose={() => setEditingItem(null)} maxWidth="md">
-                <form onSubmit={submitEdit} className="p-6 space-y-4">
+            <Modal show={Boolean(editingItem)} onClose={() => setEditingItem(null)} maxWidth="lg">
+                <form onSubmit={submitEdit} className="p-6 space-y-4 max-h-[88vh] overflow-y-auto">
                     <div className="border-b border-teal-100 pb-3">
                         <h3 className="text-base font-black text-[#134E4A]">Ubah Data Pelanggan</h3>
                         <p className="text-xs text-slate-500 mt-0.5">Perbarui profil dan fasilitas tempo pelanggan.</p>
@@ -388,7 +410,7 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                     </div>
 
                     <div>
-                        <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Lengkap</label>
+                        <label className="block text-xs font-bold text-slate-700 mb-1">Alamat Lengkap & Titik Maps Kurir</label>
                         <textarea
                             value={editForm.data.alamat}
                             onChange={(e) => editForm.setData('alamat', e.target.value)}
@@ -398,6 +420,10 @@ export default function PelangganIndex({ pelanggan, filters, nextKode }) {
                         {editForm.errors.alamat && (
                             <p className="text-xs text-rose-600 mt-1">{editForm.errors.alamat}</p>
                         )}
+                        <LocationMapPicker
+                            value={editForm.data.alamat}
+                            onChange={(alamatBaru) => editForm.setData('alamat', alamatBaru)}
+                        />
                     </div>
 
                     {/* SAKLAR HAK BAYAR BELAKANGAN (TEMPO) */}

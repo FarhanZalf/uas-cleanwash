@@ -1,3 +1,4 @@
+import { IconSearch } from '@/Components/LineIcons';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatTanggal } from '@/utils/format';
 import { Head, Link, router, useForm } from '@inertiajs/react';
@@ -16,6 +17,11 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
     const handleSearch = (e) => {
         e.preventDefault();
         router.get(route('kasir.pengantaran.index'), { search }, { preserveState: true, preserveScroll: true });
+    };
+
+    const handleResetSearch = () => {
+        setSearch('');
+        router.get(route('kasir.pengantaran.index'), {}, { preserveState: true, preserveScroll: true });
     };
 
     const toggleNota = (id) => {
@@ -68,26 +74,38 @@ export default function PengantaranIndex({ pengantaran, kurirList, transaksiSiap
             <Head title="Kloter Pengantaran" />
 
             <div className="mx-auto max-w-7xl space-y-6 px-4 sm:px-6 lg:px-8">
-                {/* Baris Statistik & Pencarian */}
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <form onSubmit={handleSearch} className="flex gap-2 w-full md:w-96">
-                        <input
-                            type="text"
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            placeholder="Cari kode kloter atau nama kurir..."
-                            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-xs focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
-                        />
+                {/* Bar Pencarian Seragam Full-Width */}
+                <div className="rounded-xl border border-teal-200/80 bg-white p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <form onSubmit={handleSearch} className="flex-1 w-full flex items-center gap-2">
+                        <div className="relative flex-1">
+                            <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="text"
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                placeholder="Cari kode kloter (ANT-...) atau nama kurir..."
+                                className="block w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-3.5 text-xs font-medium text-slate-800 focus:border-[#0D9488] focus:outline-none focus:ring-1 focus:ring-[#0D9488]"
+                            />
+                        </div>
                         <button
                             type="submit"
-                            className="rounded-lg bg-teal-50 border border-teal-200 px-3.5 py-2 text-xs font-bold text-[#0D9488] hover:bg-teal-100 cursor-pointer"
+                            className="min-h-[38px] rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white hover:bg-[#134E4A] transition cursor-pointer"
                         >
                             Cari
                         </button>
+                        {filters?.search && (
+                            <button
+                                type="button"
+                                onClick={handleResetSearch}
+                                className="min-h-[38px] rounded-lg border border-slate-300 bg-white px-3.5 text-xs font-bold text-slate-700 hover:bg-slate-50 transition cursor-pointer"
+                            >
+                                Reset
+                            </button>
+                        )}
                     </form>
 
-                    <div className="text-xs text-slate-500 font-medium">
-                        Tersedia <strong className="text-teal-900 font-bold">{transaksiSiapAntar?.length || 0}</strong> nota cucian siap diantar ke pelanggan.
+                    <div className="text-xs font-bold text-[#134E4A] bg-[#CCFBF1]/60 px-3 py-2 rounded-lg border border-teal-200 shrink-0">
+                        Siap Antar: <span className="tabular-nums">{transaksiSiapAntar?.length || 0}</span> Nota
                     </div>
                 </div>
 

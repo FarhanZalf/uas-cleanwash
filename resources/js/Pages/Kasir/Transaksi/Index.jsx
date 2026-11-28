@@ -1,11 +1,13 @@
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
+import { IconSearch } from '@/Components/LineIcons';
+import NotaDetailModal from '@/Components/NotaDetailModal';
 import { StatusBayar, StatusProses, StatusTransaksi } from '@/Components/StatusBadge';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah, formatTanggalWaktu } from '@/utils/format';
 import { Head, Link, router } from '@inertiajs/react';
 import { useState } from 'react';
 
 const FILTER_STATUS = [
-    { value: '', label: 'Semua status' },
+    { value: '', label: 'Semua Status' },
     { value: 'Aktif', label: 'Aktif' },
     { value: 'Selesai', label: 'Selesai' },
     { value: 'Batal', label: 'Batal' },
@@ -15,9 +17,11 @@ export default function TransaksiIndex({ transaksi, filters }) {
     const [search, setSearch] = useState(filters?.search || '');
     const [status, setStatus] = useState(filters?.status || '');
     const [memuat, setMemuat] = useState(false);
+    const [selectedNotaId, setSelectedNotaId] = useState(null);
 
     const sedangMemfilter = Boolean(filters?.search || filters?.status);
     const daftar = transaksi?.data || [];
+    const selectedNota = daftar.find((item) => item.id === selectedNotaId) || null;
 
     const terapkanFilter = (event) => {
         event.preventDefault();
@@ -59,32 +63,29 @@ export default function TransaksiIndex({ transaksi, filters }) {
             <Head title="Transaksi Laundry" />
 
             <div className="mx-auto max-w-7xl space-y-4 px-4 sm:px-6 lg:px-8">
+                {/* Bar Pencarian Seragam Full-Width */}
                 <form
                     onSubmit={terapkanFilter}
-                    className="flex flex-col gap-3 rounded-xl border border-teal-100 bg-white p-4 md:flex-row md:items-end"
+                    className="flex flex-col gap-3 rounded-xl border border-teal-200/80 bg-white p-4 sm:flex-row sm:items-center"
                 >
-                    <div className="flex-1">
-                        <label htmlFor="cari-transaksi" className="block text-xs font-bold text-[#134E4A]">
-                            Cari nota
-                        </label>
+                    <div className="relative flex-1">
+                        <IconSearch className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                         <input
                             id="cari-transaksi"
                             type="search"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            placeholder="CW-20261122-001 atau nama pelanggan"
-                            className="mt-1 block w-full rounded-lg border-slate-300 text-sm focus:border-[#0D9488] focus:ring-[#0D9488]"
+                            placeholder="Cari nomor nota (CW-...) atau nama pelanggan..."
+                            className="block w-full rounded-lg border border-slate-300 bg-white py-2 pl-10 pr-3.5 text-xs font-medium text-slate-800 focus:border-[#0D9488] focus:outline-none focus:ring-1 focus:ring-[#0D9488]"
                         />
                     </div>
-                    <div className="md:w-48">
-                        <label htmlFor="filter-status" className="block text-xs font-bold text-[#134E4A]">
-                            Status transaksi
-                        </label>
+                    <div className="flex flex-wrap items-center gap-2">
                         <select
                             id="filter-status"
+                            aria-label="Filter status transaksi"
                             value={status}
                             onChange={(e) => setStatus(e.target.value)}
-                            className="mt-1 block w-full rounded-lg border-slate-300 text-sm focus:border-[#0D9488] focus:ring-[#0D9488]"
+                            className="min-w-[140px] rounded-lg border border-slate-300 bg-white py-2 pl-3 pr-8 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
                         >
                             {FILTER_STATUS.map((opsi) => (
                                 <option key={opsi.value} value={opsi.value}>
@@ -92,20 +93,18 @@ export default function TransaksiIndex({ transaksi, filters }) {
                                 </option>
                             ))}
                         </select>
-                    </div>
-                    <div className="flex gap-2">
                         <button
                             type="submit"
                             disabled={memuat}
-                            className="min-h-[44px] flex-1 rounded-lg bg-[#134E4A] px-4 text-sm font-bold text-white transition hover:bg-[#0f3b38] disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] focus-visible:ring-offset-2 md:flex-none"
+                            className="min-h-[38px] rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white transition hover:bg-[#134E4A] disabled:opacity-60 cursor-pointer"
                         >
-                            {memuat ? 'Memuat...' : 'Terapkan'}
+                            {memuat ? 'Memuat...' : 'Cari'}
                         </button>
                         {sedangMemfilter && (
                             <button
                                 type="button"
                                 onClick={resetFilter}
-                                className="min-h-[44px] rounded-lg border border-slate-300 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 active:bg-slate-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                                className="min-h-[38px] rounded-lg border border-slate-300 bg-white px-3.5 text-xs font-bold text-slate-700 transition hover:bg-slate-50 cursor-pointer"
                             >
                                 Reset
                             </button>
@@ -113,46 +112,53 @@ export default function TransaksiIndex({ transaksi, filters }) {
                     </div>
                 </form>
 
-                <div className="overflow-hidden rounded-xl border border-teal-100 bg-white" aria-busy={memuat}>
+                <div className="overflow-hidden rounded-xl border border-teal-200/80 bg-white" aria-busy={memuat}>
                     <div className="overflow-x-auto">
-                        <table className={`w-full min-w-[760px] text-left text-sm ${memuat ? 'opacity-60' : ''}`}>
-                            <thead className="border-b border-teal-100 bg-[#F6FBF9] text-xs font-bold text-[#134E4A]">
+                        <table className={`w-full min-w-[760px] text-left text-xs ${memuat ? 'opacity-60' : ''}`}>
+                            <thead className="border-b border-teal-100 bg-[#F6FBF9] font-bold text-[#134E4A]">
                                 <tr>
-                                    <th scope="col" className="px-4 py-3">No. nota</th>
-                                    <th scope="col" className="px-4 py-3">Pelanggan</th>
-                                    <th scope="col" className="px-4 py-3">Diterima</th>
-                                    <th scope="col" className="px-4 py-3">Proses</th>
-                                    <th scope="col" className="px-4 py-3">Pembayaran</th>
-                                    <th scope="col" className="px-4 py-3 text-right">Sisa tagihan</th>
-                                    <th scope="col" className="px-4 py-3"><span className="sr-only">Aksi</span></th>
+                                    <th scope="col" className="px-5 py-3.5">No. Nota</th>
+                                    <th scope="col" className="px-5 py-3.5">Pelanggan</th>
+                                    <th scope="col" className="px-5 py-3.5">Waktu Terima</th>
+                                    <th scope="col" className="px-5 py-3.5">Tahap Proses</th>
+                                    <th scope="col" className="px-5 py-3.5">Pembayaran</th>
+                                    <th scope="col" className="px-5 py-3.5 text-right">Sisa Tagihan</th>
+                                    <th scope="col" className="px-5 py-3.5 text-right">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-slate-100">
+                            <tbody className="divide-y divide-teal-100/70">
                                 {daftar.map((item) => (
-                                    <tr key={item.id} className="hover:bg-[#F6FBF9]">
-                                        <td className="px-4 py-3">
-                                            <div className="font-mono text-sm font-bold text-[#134E4A]">{item.no_nota}</div>
+                                    <tr key={item.id} className="hover:bg-[#F6FBF9] transition">
+                                        <td className="px-5 py-3.5">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedNotaId(item.id)}
+                                                className="font-mono font-bold text-[#134E4A] hover:text-[#0D9488] hover:underline cursor-pointer"
+                                            >
+                                                {item.no_nota}
+                                            </button>
                                             {item.status_transaksi !== 'Aktif' && (
                                                 <div className="mt-1"><StatusTransaksi status={item.status_transaksi} /></div>
                                             )}
                                         </td>
-                                        <td className="px-4 py-3">
-                                            <div className="font-semibold text-slate-800">{item.pelanggan?.nama}</div>
-                                            <div className="text-xs text-slate-600">{item.pelanggan?.no_telepon}</div>
+                                        <td className="px-5 py-3.5">
+                                            <div className="font-bold text-slate-800">{item.pelanggan?.nama}</div>
+                                            <div className="text-[11px] text-slate-500">{item.pelanggan?.no_telepon}</div>
                                         </td>
-                                        <td className="px-4 py-3 text-slate-700">{formatTanggalWaktu(item.tanggal_terima)}</td>
-                                        <td className="px-4 py-3"><StatusProses status={item.status_proses_terkini} /></td>
-                                        <td className="px-4 py-3"><StatusBayar status={item.status_bayar} /></td>
-                                        <td className="px-4 py-3 text-right font-bold tabular-nums text-slate-800">
+                                        <td className="px-5 py-3.5 text-slate-700">{formatTanggalWaktu(item.tanggal_terima)}</td>
+                                        <td className="px-5 py-3.5"><StatusProses status={item.status_proses_terkini} /></td>
+                                        <td className="px-5 py-3.5"><StatusBayar status={item.status_bayar} /></td>
+                                        <td className="px-5 py-3.5 text-right font-bold tabular-nums text-[#134E4A]">
                                             {formatRupiah(item.sisa_tagihan)}
                                         </td>
-                                        <td className="px-4 py-3 text-right">
-                                            <Link
-                                                href={route('kasir.transaksi.show', item.id)}
-                                                className="inline-flex min-h-[36px] items-center rounded-lg px-3 text-xs font-bold text-[#0D9488] transition hover:bg-teal-50 active:bg-teal-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                                        <td className="px-5 py-3.5 text-right">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedNotaId(item.id)}
+                                                className="inline-flex min-h-[34px] items-center rounded-lg border border-teal-200 bg-[#F6FBF9] px-3 text-xs font-bold text-[#0D9488] transition hover:bg-[#CCFBF1] hover:text-[#134E4A] cursor-pointer"
                                             >
-                                                Lihat nota
-                                            </Link>
+                                                Lihat Nota
+                                            </button>
                                         </td>
                                     </tr>
                                 ))}
@@ -164,26 +170,23 @@ export default function TransaksiIndex({ transaksi, filters }) {
                         <div className="px-4 py-10 text-center">
                             {sedangMemfilter ? (
                                 <>
-                                    <p className="font-semibold text-slate-800">Tidak ada nota yang cocok dengan filter ini.</p>
+                                    <p className="font-bold text-xs text-slate-800">Tidak ada nota yang cocok dengan pencarian.</p>
                                     <button
                                         type="button"
                                         onClick={resetFilter}
-                                        className="mt-3 min-h-[44px] rounded-lg border border-slate-300 px-4 text-sm font-semibold text-slate-700 hover:bg-slate-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488]"
+                                        className="mt-3 min-h-[38px] rounded-lg border border-slate-300 px-4 text-xs font-bold text-slate-700 hover:bg-slate-50 cursor-pointer"
                                     >
-                                        Tampilkan semua nota
+                                        Tampilkan Semua Nota
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <p className="font-semibold text-slate-800">Belum ada nota tercatat.</p>
-                                    <p className="mt-1 text-sm text-slate-600">
-                                        Nota pertama akan muncul di sini dan langsung masuk antrean produksi.
-                                    </p>
+                                    <p className="font-bold text-xs text-slate-800">Belum ada nota tercatat.</p>
                                     <Link
                                         href={route('kasir.transaksi.create')}
-                                        className="mt-4 inline-flex min-h-[44px] items-center rounded-lg bg-[#0D9488] px-4 text-sm font-bold text-white hover:bg-[#134E4A] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] focus-visible:ring-offset-2"
+                                        className="mt-3 inline-flex min-h-[38px] items-center rounded-lg bg-[#0D9488] px-4 text-xs font-bold text-white hover:bg-[#134E4A]"
                                     >
-                                        Buat nota pertama
+                                        + Buat Nota Pertama
                                     </Link>
                                 </>
                             )}
@@ -206,9 +209,9 @@ export default function TransaksiIndex({ transaksi, filters }) {
                                             href={link.url}
                                             preserveState
                                             aria-current={link.active ? 'page' : undefined}
-                                            className={`min-h-[36px] min-w-[36px] rounded-md px-3 py-2 text-center text-xs font-semibold transition focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] ${
+                                            className={`min-h-[34px] min-w-[34px] rounded-md px-3 py-1.5 text-center text-xs font-bold transition ${
                                                 link.active
-                                                    ? 'bg-[#134E4A] text-white'
+                                                    ? 'bg-[#0D9488] text-white'
                                                     : 'border border-slate-200 text-slate-700 hover:bg-slate-50'
                                             }`}
                                             dangerouslySetInnerHTML={{ __html: link.label }}
@@ -216,7 +219,7 @@ export default function TransaksiIndex({ transaksi, filters }) {
                                     ) : (
                                         <span
                                             key={idx}
-                                            className="min-h-[36px] min-w-[36px] rounded-md border border-slate-100 px-3 py-2 text-center text-xs text-slate-500"
+                                            className="min-h-[34px] min-w-[34px] rounded-md border border-slate-100 px-3 py-1.5 text-center text-xs text-slate-400"
                                             dangerouslySetInnerHTML={{ __html: link.label }}
                                         />
                                     ),
@@ -226,6 +229,12 @@ export default function TransaksiIndex({ transaksi, filters }) {
                     )}
                 </div>
             </div>
+
+            <NotaDetailModal
+                show={Boolean(selectedNota)}
+                transaksi={selectedNota}
+                onClose={() => setSelectedNotaId(null)}
+            />
         </AuthenticatedLayout>
     );
 }

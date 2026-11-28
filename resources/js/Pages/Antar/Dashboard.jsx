@@ -1,8 +1,9 @@
-import { IconPhone, IconPin, IconTruck } from '@/Components/LineIcons';
+import { IconPhone, IconPin, IconSearch, IconTruck } from '@/Components/LineIcons';
+import { buildGoogleMapsUrl } from '@/Components/LocationMapPicker';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { formatRupiah, formatTanggal } from '@/utils/format';
 import { Head, router, useForm } from '@inertiajs/react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 const STATUS_ANTAR_OPTIONS = [
     { value: 'Menunggu', label: 'Menunggu' },
@@ -14,6 +15,7 @@ const STATUS_ANTAR_OPTIONS = [
 
 export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
     const [selectedItemGagal, setSelectedItemGagal] = useState(null);
+    const [cari, setCari] = useState('');
 
     const formGagal = useForm({
         status_antar: 'Gagal',
@@ -62,43 +64,92 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
         Gagal: 'bg-rose-100 text-rose-800 border-rose-200',
     };
 
+    const daftarTerfilter = useMemo(() => {
+        const list = daftarAntaran || [];
+        const q = cari.trim().toLowerCase();
+        if (!q) return list;
+        return list.filter((item) => {
+            const nota = item.transaksi_laundry?.no_nota?.toLowerCase() || '';
+            const kloter = item.pengantaran?.kode_pengantaran?.toLowerCase() || '';
+            const nama = item.transaksi_laundry?.pelanggan?.nama?.toLowerCase() || '';
+            const alamat = item.transaksi_laundry?.pelanggan?.alamat?.toLowerCase() || '';
+            return nota.includes(q) || kloter.includes(q) || nama.includes(q) || alamat.includes(q);
+        });
+    }, [daftarAntaran, cari]);
+
+    const kartuRingkasan = [
+        { key: 'semua', label: 'Semua Paket', nilai: counts?.total || 0 },
+        { key: 'hari_ini', label: 'Jadwal Hari Ini', nilai: counts?.hari_ini || 0 },
+        { key: 'aktif', label: 'Sedang Diantar', nilai: counts?.aktif || 0 },
+        { key: 'selesai', label: 'Sudah Diterima', nilai: counts?.diterima || 0 },
+        { key: 'gagal', label: 'Gagal Antar', nilai: counts?.gagal || 0 },
+    ];
+
     return (
         <AuthenticatedLayout
             header={
-                <h1 className="text-lg font-bold text-[#134E4A]">Pengantaran Kurir</h1>
+                <div className="flex items-center gap-2.5">
+                    <h1 className="text-lg font-bold text-[#134E4A]">Pengantaran Kurir</h1>
+                </div>
             }
         >
             <Head title="Pengantaran Kurir" />
 
-            <div className="mx-auto max-w-3xl space-y-5 px-3 sm:px-6">
-                {/* Filter Tab Bar */}
-                <div className="flex border-b border-teal-100 pb-2 gap-2 text-xs font-bold overflow-x-auto">
-                    {[
-                        { key: 'semua', label: `Semua (${counts?.total || 0})` },
-                        { key: 'hari_ini', label: `Hari Ini (${counts?.hari_ini || 0})` },
-                        { key: 'aktif', label: `Aktif (${counts?.aktif || 0})` },
-                        { key: 'selesai', label: `Diterima (${counts?.diterima || 0})` },
-                        { key: 'gagal', label: `Gagal (${counts?.gagal || 0})` },
-                    ].map((t) => (
-                        <button
-                            key={t.key}
-                            type="button"
-                            onClick={() => handleTabChange(t.key)}
-                            className={`min-h-[38px] px-3.5 py-1.5 rounded-lg whitespace-nowrap transition cursor-pointer ${
-                                activeTab === t.key
-                                    ? 'bg-[#0D9488] text-white'
-                                    : 'border border-teal-100 bg-white text-slate-700 hover:bg-[#F6FBF9]'
-                            }`}
-                        >
-                            {t.label}
-                        </button>
-                    ))}
+            <div className="mx-auto max-w-7xl space-y-5 px-4 sm:px-6 lg:px-8">
+                {/* 5 Kartu Ringkasan Tugas Kurir */}
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+                    {kartuRingkasan.map((k) => {
+                        const aktif = (activeTab || 'semua') === k.key;
+                        return (
+                            <button
+                                key={k.key}
+                                type="button"
+                                onClick={() => handleTabChange(k.key)}
+                                className={`flex items-center justify-between rounded-xl border px-4 py-3 text-left transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0D9488] ${
+                                    aktif
+                                        ? 'border-[#0D9488] bg-[#CCFBF1]/60 ring-1 ring-[#0D9488]'
+                                        : 'border-teal-100 bg-[#F6FBF9] hover:border-teal-300'
+                                }`}
+                            >
+                                <div>
+                                    <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                                        {k.label}
+                                    </span>
+                                    <div className="mt-0.5 text-2xl font-black tabular-nums text-[#134E4A]">
+                                        {k.nilai}
+                                    </div>
+                                </div>
+                                <span
+                                    className={`h-2.5 w-2.5 rounded-full ${
+                                        aktif ? 'bg-[#0D9488]' : 'bg-teal-200'
+                                    }`}
+                                />
+                            </button>
+                        );
+                    })}
                 </div>
 
-                {/* Daftar Kartu Antaran */}
-                <div className="space-y-4">
-                    {daftarAntaran && daftarAntaran.length > 0 ? (
-                        daftarAntaran.map((item) => {
+                {/* Baris Pencarian Cepat */}
+                <div className="flex flex-col gap-3 rounded-xl border border-teal-100 bg-white p-3.5 sm:flex-row sm:items-center sm:justify-between">
+                    <div className="relative flex-1">
+                        <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <input
+                            type="search"
+                            value={cari}
+                            onChange={(e) => setCari(e.target.value)}
+                            placeholder="Cari nomor nota, kode kloter, nama pelanggan, atau alamat..."
+                            className="block w-full rounded-lg border border-slate-300 bg-white py-2 pl-9 pr-3 text-xs font-medium text-slate-800 focus:border-[#0D9488] focus:outline-none focus:ring-1 focus:ring-[#0D9488]"
+                        />
+                    </div>
+                    <div className="text-xs font-bold text-[#134E4A] px-1">
+                        Menampilkan <span className="tabular-nums text-[#0D9488]">{daftarTerfilter.length}</span> paket
+                    </div>
+                </div>
+
+                {/* Grid 2 Kolom Kartu Antaran */}
+                {daftarTerfilter.length > 0 ? (
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                        {daftarTerfilter.map((item) => {
                             const nota = item.transaksi_laundry;
                             const plg = nota?.pelanggan;
                             const itemsPakaian = nota?.detail_pakaian || [];
@@ -106,122 +157,159 @@ export default function AntarDashboard({ daftarAntaran, counts, activeTab }) {
                             const phoneClean = plg?.no_telepon ? plg.no_telepon.replace(/\D/g, '').replace(/^0/, '62') : '';
                             const waText = encodeURIComponent(`Halo ${plg?.nama || ''}, kurir CleanWash mengantar cucian nota ${nota?.no_nota || ''}.`);
                             const waLink = `https://wa.me/${phoneClean}?text=${waText}`;
-                            const mapsLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(plg?.alamat || '')}`;
+                            const mapsLink = buildGoogleMapsUrl(plg?.alamat || '');
 
                             return (
-                                <div
+                                <article
                                     key={item.id}
-                                    className="rounded-xl border border-teal-200/80 bg-white p-4 sm:p-5 space-y-3"
+                                    className="flex flex-col justify-between overflow-hidden rounded-xl border border-teal-200/80 bg-white"
                                 >
-                                    <div className="flex items-center justify-between border-b border-teal-100 pb-2.5">
-                                        <div className="flex items-center gap-2">
-                                            <span className="font-mono font-bold text-sm text-[#134E4A]">
-                                                {nota?.no_nota}
-                                            </span>
-                                            <span className="text-[11px] text-slate-500">
-                                                {item.pengantaran?.kode_pengantaran}
-                                            </span>
-                                        </div>
-                                        <span className={`px-2.5 py-0.5 text-xs font-bold rounded-md border ${statusBadgeClass[item.status_antar] || ''}`}>
-                                            {item.status_antar}
-                                        </span>
-                                    </div>
-
                                     <div>
-                                        <div className="flex items-center justify-between">
-                                            <h2 className="text-base font-bold text-[#134E4A]">{plg?.nama}</h2>
-                                            <span className={`text-xs font-bold px-2 py-0.5 rounded-md ${
-                                                nota?.status_bayar === 'Lunas'
-                                                    ? 'bg-[#CCFBF1] text-[#134E4A]'
-                                                    : 'bg-amber-100 text-amber-900'
-                                            }`}>
-                                                {nota?.status_bayar === 'Lunas' ? 'Lunas' : formatRupiah(nota?.sisa_tagihan)}
+                                        {/* Header Kartu */}
+                                        <div className="flex items-center justify-between gap-2 border-b border-teal-100 bg-[#F6FBF9] px-4 py-3">
+                                            <div className="flex items-center gap-2">
+                                                <span className="font-mono text-sm font-black text-[#134E4A]">
+                                                    {nota?.no_nota}
+                                                </span>
+                                                <span className="rounded border border-teal-200 bg-white px-2 py-0.5 font-mono text-[11px] font-bold text-teal-800">
+                                                    {item.pengantaran?.kode_pengantaran}
+                                                </span>
+                                            </div>
+                                            <span
+                                                className={`rounded-md border px-2.5 py-0.5 text-xs font-bold ${
+                                                    statusBadgeClass[item.status_antar] || ''
+                                                }`}
+                                            >
+                                                {item.status_antar}
                                             </span>
                                         </div>
 
-                                        <p className="mt-2 flex items-start gap-2 text-xs text-slate-700 bg-[#F6FBF9] p-3 rounded-lg border border-teal-100">
-                                            <IconPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0D9488]" />
-                                            <span>{plg?.alamat || 'Alamat belum tercatat'}</span>
-                                        </p>
-                                    </div>
+                                        {/* Informasi Pelanggan, Tagihan & Alamat */}
+                                        <div className="p-4 space-y-3">
+                                            <div className="flex items-start justify-between gap-3">
+                                                <div>
+                                                    <h2 className="text-sm font-bold text-[#134E4A]">{plg?.nama}</h2>
+                                                    <span className="text-xs font-medium text-slate-500">
+                                                        {plg?.no_telepon || '-'}
+                                                    </span>
+                                                </div>
+                                                <span
+                                                    className={`rounded-md px-2.5 py-1 text-xs font-extrabold tabular-nums ${
+                                                        nota?.status_bayar === 'Lunas'
+                                                            ? 'bg-[#CCFBF1] text-[#134E4A]'
+                                                            : 'bg-amber-100 text-amber-900'
+                                                    }`}
+                                                >
+                                                    {nota?.status_bayar === 'Lunas'
+                                                        ? 'Lunas'
+                                                        : `Tagihan: ${formatRupiah(nota?.sisa_tagihan)}`}
+                                                </span>
+                                            </div>
 
-                                    <div className="text-xs text-slate-600">
-                                        {itemsPakaian.map((it) => `${it.jenis_layanan?.nama_layanan} (${it.berat_atau_jumlah})`).join(', ') || 'Cucian selesai'}
-                                    </div>
+                                            <div className="flex items-start gap-2.5 rounded-lg border border-teal-100 bg-[#F6FBF9] p-3 text-xs text-slate-700">
+                                                <IconPin className="mt-0.5 h-4 w-4 shrink-0 text-[#0D9488]" />
+                                                <span className="font-medium leading-relaxed">
+                                                    {plg?.alamat || 'Alamat belum tercatat'}
+                                                </span>
+                                            </div>
 
-                                    {item.status_antar === 'Gagal' && item.alasan_gagal && (
-                                        <div className="rounded-lg border border-rose-200 bg-rose-50/60 p-3 text-xs text-rose-900 space-y-1">
-                                            <div className="font-bold">Gagal: {item.alasan_gagal}</div>
-                                            {item.jadwal_ulang && (
-                                                <div className="text-[11px] text-rose-700 font-semibold">
-                                                    Jadwal Ulang: {formatTanggal(item.jadwal_ulang)}
+                                            <div className="flex flex-wrap items-center gap-1.5 text-xs">
+                                                {itemsPakaian.length > 0 ? (
+                                                    itemsPakaian.map((it) => (
+                                                        <span
+                                                            key={it.id}
+                                                            className="rounded-md border border-slate-200 bg-white px-2.5 py-1 font-semibold text-slate-700"
+                                                        >
+                                                            {it.jenis_layanan?.nama_layanan} ({it.berat_atau_jumlah})
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className="text-slate-500">Paket cucian siap antar</span>
+                                                )}
+                                            </div>
+
+                                            {item.status_antar === 'Gagal' && item.alasan_gagal && (
+                                                <div className="rounded-lg border border-rose-200 bg-rose-50/70 p-3 text-xs text-rose-900 space-y-1">
+                                                    <div className="font-bold">Gagal: {item.alasan_gagal}</div>
+                                                    {item.jadwal_ulang && (
+                                                        <div className="text-[11px] font-semibold text-rose-700">
+                                                            Jadwal Ulang: {formatTanggal(item.jadwal_ulang)}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             )}
                                         </div>
-                                    )}
-
-                                    <div className="grid grid-cols-2 gap-2 pt-1">
-                                        <a
-                                            href={waLink}
-                                            target="_blank"
-                                            rel="noreferrer"
-                                            className="inline-flex min-h-[42px] items-center justify-center rounded-lg bg-[#0D9488] px-3 text-xs font-bold text-white hover:bg-[#134E4A] transition gap-1.5"
-                                        >
-                                            <IconPhone className="h-3.5 w-3.5" />
-                                            <span>WhatsApp</span>
-                                        </a>
-
-                                        {plg?.alamat ? (
-                                            <a
-                                                href={mapsLink}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                                className="inline-flex min-h-[42px] items-center justify-center rounded-lg border border-teal-200 bg-[#F6FBF9] px-3 text-xs font-bold text-[#134E4A] hover:bg-[#CCFBF1] transition gap-1.5"
-                                            >
-                                                <IconPin className="h-3.5 w-3.5 text-[#0D9488]" />
-                                                <span>Google Maps</span>
-                                            </a>
-                                        ) : (
-                                            <button
-                                                type="button"
-                                                disabled
-                                                className="inline-flex min-h-[42px] items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-400 cursor-not-allowed"
-                                            >
-                                                Maps Tidak Ada
-                                            </button>
-                                        )}
                                     </div>
 
-                                    {/* Dropdown Ubah Status Pengantaran */}
-                                    <div className="border-t border-teal-100 pt-3">
-                                        <label htmlFor={`status-antar-${item.id}`} className="block text-[11px] font-bold text-[#134E4A] mb-1">
-                                            Ubah Status Pengantaran
-                                        </label>
-                                        <select
-                                            id={`status-antar-${item.id}`}
-                                            value={item.status_antar}
-                                            onChange={(e) => handleDropdownStatusChange(item, e.target.value)}
-                                            className="block w-full rounded-lg border border-teal-300 bg-white px-3 py-2.5 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488]"
-                                        >
-                                            {STATUS_ANTAR_OPTIONS.map((opt) => (
-                                                <option key={opt.value} value={opt.value}>
-                                                    {opt.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                    {/* Footer Kartu: Dropdown Status & Pintasan WhatsApp / Maps */}
+                                    <div className="border-t border-teal-100 bg-[#F6FBF9]/60 p-4 space-y-3">
+                                        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
+                                            <div className="flex-1">
+                                                <label
+                                                    htmlFor={`status-antar-${item.id}`}
+                                                    className="block text-[11px] font-bold text-[#134E4A] mb-1"
+                                                >
+                                                    Ubah Status Pengantaran
+                                                </label>
+                                                <select
+                                                    id={`status-antar-${item.id}`}
+                                                    value={item.status_antar}
+                                                    onChange={(e) => handleDropdownStatusChange(item, e.target.value)}
+                                                    className="block w-full rounded-lg border border-teal-300 bg-white px-3 py-2 text-xs font-bold text-[#134E4A] focus:border-[#0D9488] focus:ring-1 focus:ring-[#0D9488] cursor-pointer"
+                                                >
+                                                    {STATUS_ANTAR_OPTIONS.map((opt) => (
+                                                        <option key={opt.value} value={opt.value}>
+                                                            {opt.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
+                                            <div className="flex items-center gap-2 shrink-0">
+                                                <a
+                                                    href={waLink}
+                                                    target="_blank"
+                                                    rel="noreferrer"
+                                                    className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-lg bg-[#0D9488] px-3.5 text-xs font-bold text-white transition hover:bg-[#134E4A]"
+                                                >
+                                                    <IconPhone className="h-3.5 w-3.5" />
+                                                    <span>WhatsApp</span>
+                                                </a>
+
+                                                {plg?.alamat ? (
+                                                    <a
+                                                        href={mapsLink}
+                                                        target="_blank"
+                                                        rel="noreferrer"
+                                                        className="inline-flex min-h-[38px] items-center justify-center gap-1.5 rounded-lg border border-teal-200 bg-white px-3.5 text-xs font-bold text-[#134E4A] transition hover:bg-[#CCFBF1]"
+                                                    >
+                                                        <IconPin className="h-3.5 w-3.5 text-[#0D9488]" />
+                                                        <span>Maps</span>
+                                                    </a>
+                                                ) : (
+                                                    <button
+                                                        type="button"
+                                                        disabled
+                                                        className="inline-flex min-h-[38px] items-center justify-center rounded-lg border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-400 cursor-not-allowed"
+                                                    >
+                                                        Maps
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                </article>
                             );
-                        })
-                    ) : (
-                        <div className="rounded-xl border border-teal-200/80 bg-white p-10 text-center text-slate-600">
-                            <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
-                                <IconTruck className="h-5 w-5" />
-                            </div>
-                            <div className="font-bold text-[#134E4A] text-sm">Tidak ada tugas pengantaran</div>
+                        })}
+                    </div>
+                ) : (
+                    <div className="rounded-xl border border-teal-200/80 bg-white p-10 text-center text-slate-600">
+                        <div className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-xl border border-teal-200 bg-[#CCFBF1] text-[#134E4A]">
+                            <IconTruck className="h-5 w-5" />
                         </div>
-                    )}
-                </div>
+                        <div className="font-bold text-[#134E4A] text-sm">Tidak ada tugas pengantaran</div>
+                    </div>
+                )}
             </div>
 
             {/* Modal Lapor Gagal Antar */}
